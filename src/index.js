@@ -1,14 +1,12 @@
-const express = require('express');
-const cors = require('cors');
-const v1UserRouter = require('./routes/userRoutes');
-if (process.env.NODE_ENV !== 'production') require('dotenv').config();
+import connectDB from '#Config/db.js';
+import '#Config/env.js';
+import httpServer from '#Config/http.js';
 
-const app = express();
-const PORT = process.env.PORT || 3000;
+const bootstrap = async () => {
+  await connectDB(process.env.MONGODB_URL);
+  httpServer.listen(process.env.PORT, () => {
+    console.log(`Servidor escuchando en el puerto ${process.env.PORT}`);
+  });
+};
 
-app.use(express.json());
-app.use(cors());
-
-app.use('/api/v1/users', v1UserRouter);
-
-app.listen(PORT, () => console.log(`Servidor ejecutandose en puerto ${PORT}`));
+bootstrap();

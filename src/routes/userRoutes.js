@@ -1,5 +1,6 @@
-const express = require('express');
-const userController = require('../controllers/userController');
+import express from 'express';
+import { getAllUsers, getOneUser, createNewUser, updateOneUser, deleteOneUser } from '#Controllers/userController.js';
+
 
 const router = express.Router();
 
@@ -7,14 +8,14 @@ const router = express.Router();
   * Users Routes */ 
 router
 
-  .get('/', userController.getAllUsers)
+  .get('/', getAllUsers)
 
-  .get('/:userId', userController.getOneUser)
+  .get('/:userId', getOneUser)
 
-  .post('/', userController.createNewUser)
+  .post('/', createNewUser)
 
-  .patch('/:userId', userController.updateOneUser)
+  .patch('/:userId', updateOneUser)
 
-  .delete('/:userId', userController.deleteOneUser)
+  .delete('/:userId', deleteOneUser)
 
-module.exports = router;
+export default router;

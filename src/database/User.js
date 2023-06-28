@@ -5,7 +5,7 @@ const { saveToDatabase } = require('./utils');
 
 const getAllUsers = (filterParams) => {
   try {
-		let users = DB.users;
+		const users = DB.users;
 		if (filterParams.name) {
 			return DB.users.filter((user) =>
 				user.name.toLowerCase().includes(filterParams.name)

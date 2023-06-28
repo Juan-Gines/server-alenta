@@ -1,18 +1,17 @@
-const userService = require('../services/userService');
+import userService from '#Services/userService.js';
 
 const getAllUsers = (req, res) => {
-  const { name } = req.query;
-  try {
-    const allUsers = userService.getAllUsers({ name });
-    res.json({ status: 'OK', data: allUsers});
-  } catch (error) {
-    res
-      .status(error?.status || 500)
-      .json({ status : "FAILED", data: { error: error?.message || error}});
-  }
+  userService
+    .getAllUsers()    
+    .then(data => res.json({ status: 'OK', data }))
+    .catch(error =>{
+      res
+        .status(error?.status || 500)
+        .json({ status: 'FAILED', data: { error: error?.message || error } });
+    });  
 }
 
-const getOneUser = (req, res) => {
+const getOneUser = async (req, res) => {
   const { params: { userId } } = req;
 
   if (!userId) {
@@ -21,15 +20,16 @@ const getOneUser = (req, res) => {
       data: { error: "Parametro ':userId' no puede estar vacio."},
     })
   }
-  try {
-    const user = userService.getOneUser(userId);
-    res.json({ status: 'OK', data: user })
-  } catch (error) {
-    res
-      .status(error?.status || 500)
-      .json({ status: 'FAILED', data: { error: error?.message || error }});
-  }
+  userService
+    .getOneUser(userId)
+    .then(data => res.json({ status: 'OK', data }))
+    .catch(error =>{
+      res
+        .status(error?.status || 500)
+        .json({ status: 'FAILED', data: { error: error?.message || error } });
+    });
 }
+
 
 const createNewUser = (req, res) => {
   const { body } = req;
@@ -51,21 +51,19 @@ const createNewUser = (req, res) => {
     email: body.email,
     password: body.password
   }
-  try {
-    const createdUser = userService.createNewUser(newUser);
-    res.status(201).json({ status: 'OK', data: createdUser});
-  } catch (error) {
-    res
-      .status(error?.status || 500)
-      .json({ status: 'FAILED', data: { error: error?.message || error }})
-  }
+  
+  userService
+    .createNewUser(newUser)
+    .then(createdUser => res.status(201).json({ status: 'OK', data: createdUser}))
+    .catch(error => { 
+      res
+        .status(error?.status || 500)
+        .json({ status: 'FAILED', data: { error: error?.message || error }});
+    })    
 }
 
 const updateOneUser = (req, res) => {
   const { body, params: { userId } } = req;
-
-  console.log(body, userId)
-
   if (!userId) {
 		return res.status(400).json({
 			status: 'FAILED',
@@ -73,19 +71,19 @@ const updateOneUser = (req, res) => {
 		});
 	}
 
-  try {
-    const updatedUser = userService.updateOneUser(userId, body);
-    res.json({ status: 'OK', data: updatedUser});
-  } catch (error) {
-    res
-			.status(error?.status || 500)
-			.json({ status: 'FAILED', data: { error: error?.message || error } });
-  }
+  userService
+    .updateOneUser(userId, body)
+    .then(updatedUser => res.json({ status: 'OK', data: updatedUser }))
+    .catch (error => {
+      res
+        .status(error?.status || 500)
+        .json({ status: 'FAILED', data: { error: error?.message || error } })
+    });
 }
+
 
 const deleteOneUser = (req, res) => {
-  const {	params: { userId },	} = req;
-
+  const {	params: { userId } } = req;
   if (!userId) {
 		return res.status(400).json({
 			status: 'FAILED',
@@ -93,20 +91,22 @@ const deleteOneUser = (req, res) => {
 		});
 	}
 
-  try {
-    userService.deleteOneUser(userId);
-    res.status(204).send({ status: 'OK' });
-  } catch (error) {
-    res
-			.status(error?.status || 500)
-			.send({ status: 'FAILED', data: { error: error?.message || error } });
-  }
+  userService
+    .deleteOneUser(userId)
+    .then(deletedUser => {
+      res        
+        .json({ status: 'OK', data: deletedUser })})
+    .catch((error) => {
+      res
+        .status(error?.status || 500)
+        .json({ status: 'FAILED', data: { error: error?.message || error } });
+    });
 }
 
-module.exports = {
-  createNewUser,
-  getAllUsers,
-  getOneUser,
-  updateOneUser,
-  deleteOneUser
-}
+export { 
+  getAllUsers, 
+  getOneUser, 
+  createNewUser, 
+  updateOneUser, 
+  deleteOneUser 
+};
