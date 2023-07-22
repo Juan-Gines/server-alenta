@@ -9,7 +9,11 @@
             "#Controllers/*": ["./src/controllers/*"],
             "#Routes/*": ["./src/routes/*"],
             "#Services/*": ["./src/services/*"],
-            "#Models/*": ["./src/models/*"]
+            "#Auth/*": ["./src/middleware/auth/*"],
+            "#DTO/*": ["./src/middleware/dto/*"],
+            "#Models/*": ["./src/models/*"],
+            "#Errors/*": ["./src/middleware/errors/*"],
+            "#Lang/*": ["./src/lang/*"]
         }
     }
 }

@@ -1,21 +1,20 @@
-import express from 'express';
-import { getAllUsers, getOneUser, createNewUser, updateOneUser, deleteOneUser } from '#Controllers/userController.js';
+import express from 'express'
+import { getAllUsers, getOneUser, updateOneUser, deleteOneUser } from '#Controllers/userController.js'
+import userUpdateDataDTO from '#DTO/user/updateUser.js'
+import userExtractor from '#Auth/userExtractor.js'
 
+const router = express.Router()
 
-const router = express.Router();
-
-/* 
-  * Users Routes */ 
+/*
+  * Users Routes */
 router
 
   .get('/', getAllUsers)
 
-  .get('/:userId', getOneUser)
+  .get('/perfil', userExtractor, getOneUser)
 
-  .post('/', createNewUser)
+  .patch('/', userExtractor, userUpdateDataDTO, updateOneUser)
 
-  .patch('/:userId', updateOneUser)
+  .delete('/', userExtractor, deleteOneUser)
 
-  .delete('/:userId', deleteOneUser)
-
-export default router;
+export default router

@@ -1,106 +1,97 @@
-import  { v4 } from 'uuid';
-import User from '#Models/user.js';
-import { hash } from 'bcrypt'; 
-import { SALT } from '#Constants/salt.js';
+import User from '#Models/user.js'
+import { hash } from 'bcrypt'
+import { SALT } from '#Constants/salt.js'
+import { CustomError } from '#Errors/CustomError.js'
+import { errorMessageES } from '#Lang/es/errorMessage.js'
 
-const getAllUsers = async () => { 
-  try { 
-    const users = await User.find().exec();
-      if (!users) {
-        throw { 
-          status: 404, 
-          message: 'No existen usuarios' 
-        };
+const { errEmailDuplicated, errEmpyUser, errEmpyUsers, errUnAuthorized } = errorMessageES.user
+
+const getAllUsers = () => {
+  const users = User.find()
+    .then((res) => {
+      if (res.length === 0) {
+        throw new CustomError(404, errEmpyUsers)
       }
-      return users.map(d => omitPassword(d));
-  } catch (error) {
-    throw {
-      status: error?.status || 500,
-      message: error?.message || error,
-    };
-  } 
+      return res
+    })
+    .catch((error) => {
+      throw new CustomError(error?.status ?? 500, error?.message ?? error)
+    })
+  return users
 }
 
-const getOneUser = async (userId) => { 
-  try {
-    const user = await User.findById(userId).exec();
-    if (!user)
-      throw {
-        status: 401,
-        message: 'Usuario no autorizado',
-      };    
-    return omitPassword(user);
-  } catch (error) {
-    throw {
-      status: error?.status || 500,
-      message: error?.message || error,
-    };
-  } 
+const getOneUser = (userId) => {
+  const user = User.findById(userId)
+    .then((res) => {
+      if (!res) {
+        throw new CustomError(401, errUnAuthorized)
+      }
+      return res
+    })
+    .catch((error) => {
+      throw new CustomError(error?.status ?? 500, error?.message ?? error)
+    })
+  return user
 }
 
-const createNewUser = async (newUser) => {
-  try {
-    const { email, password } = newUser;
-    const existingUserByEmail = await User.findOne({ email }).exec();
-    if (existingUserByEmail)
-      throw {
-        status: 409,
-        message: 'Ya existe un usuario con ese email registrado',
-      };
-    const userToInsert = {
-      ...newUser,
-      _id: v4(),
-      password: await hash(password, SALT),
-    };
-
-    const createdUser = new User(userToInsert);
-    await createdUser.save();
-    return omitPassword(createdUser);    
-  } catch (error) {
-    throw { status: error?.status || 500, message: error?.message || error };
-  }
+const createNewUser = (newUser) => {
+  const { email, password } = newUser
+  const user = User.findOne({ email })
+    .then(userChecked => {
+      if (userChecked) {
+        throw new CustomError(409, errEmailDuplicated)
+      }
+    })
+    .then(() => {
+      const passHassed = hash(password, SALT)
+        .then(p => p)
+      return passHassed
+    })
+    .then(passHassed => {
+      const userToInsert = {
+        ...newUser,
+        password: passHassed
+      }
+      const createdUser = new User(userToInsert)
+      createdUser.save()
+      return createdUser
+    })
+    .catch(error => {
+      throw new CustomError(error?.status ?? 500, error?.message ?? error)
+    })
+  return user
 }
 
-const updateOneUser = async (userId, changes) => {
-  try {
-    const userForUpdate = await User.findByIdAndUpdate(userId, changes).exec();
-    if (!userForUpdate) {
-      throw {
-        status: 404,
-        message: `El usuario con id '${userId} no existe.`,
-      };
-    }
-    const updatedUser = await User.findById(userForUpdate._id).exec();
-    return omitPassword(updatedUser);
-  } catch (error) {
-    throw { status: error?.status || 500, message: error?.message || error };
-  }
+const updateOneUser = (userId, changes) => {
+  const userForUpdate = User.findByIdAndUpdate(userId, changes, { new: true })
+    .then(user => {
+      if (!user) {
+        throw new CustomError(404, errEmpyUser)
+      }
+      return user
+    })
+    .catch(error => {
+      throw new CustomError(error?.status ?? 500, error?.message ?? error)
+    })
+  return userForUpdate
 }
 
 const deleteOneUser = async (userId) => {
   try {
-		const userDeleted = await User.findByIdAndDelete(userId).exec();
-    if (!userDeleted){
-      throw {
-        status: 404,
-        message: `El usuario con id '${userId} no existe.`,
-      };
+    const userDeleted = await User.findByIdAndDelete(userId).exec()
+    if (!userDeleted) {
+      throw new CustomError(404, errEmpyUser)
     }
-    return {message: `El usuario ${userDeleted.name}, Ha sido borrado con éxito.`};    
-	} catch (error) {
-		throw { status: error?.status || 500, message: error?.message || error };
-	}
+    return { message: `El usuario ${userDeleted.name}, Ha sido borrado con éxito.` }
+  } catch (error) {
+    throw new CustomError(error?.status ?? 500, error?.message ?? error)
+  }
 }
-
-const omitPassword = (user) => {
-  const { password, __v, ...userWithoutPassword } = user._doc;
-  return userWithoutPassword;
-};
 
 export default {
   createNewUser,
   getAllUsers,
   getOneUser,
   updateOneUser,
-  deleteOneUser,
-};
+  deleteOneUser
+}
