@@ -6,7 +6,11 @@ import { emailDTOSchema, nameDTOSchema, passwordDTOSchema } from '#DTO/user/type
 import { CustomError } from '#Errors/CustomError.js'
 import { errorMessageES } from '#Lang/es/errorMessage.js'
 
+// ! error Messages
+
 const { errFormatObject, errRequired } = errorMessageES.user
+
+// * Register Validation data
 
 const RegisterDTOSchema = Type.Object(
   {
@@ -38,7 +42,6 @@ const validateSchema = ajv.compile(RegisterDTOSchema)
 
 const userRegisterDTO = (req, res, next) => {
   const isDTOValid = validateSchema(req.body)
-
   if (!isDTOValid) {
     throw new CustomError(400,
       validateSchema.errors.map((path) => {
@@ -47,6 +50,7 @@ const userRegisterDTO = (req, res, next) => {
               path.instancePath.length === 0
                 ? path.params.errors[0].params.missingProperty
                 : path.instancePath.substring(1),
+          keyword: path.params.errors[0].keyword,
           message: path.message
         }
       })

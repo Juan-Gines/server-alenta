@@ -1,0 +1,3 @@
+{
+  "jest.jestCommandLine": "cross-env NODE_OPTIONS=--experimental-vm-modules NODE_ENV=test jest --verbose"
+}

@@ -1,84 +1,71 @@
-import User from '#Models/user.js'
-import { hash } from 'bcrypt'
-import { SALT } from '#Constants/salt.js'
+import UserModel from '#Models/user.js'
 import { CustomError } from '#Errors/CustomError.js'
 import { errorMessageES } from '#Lang/es/errorMessage.js'
 
-const { errEmailDuplicated, errEmpyUser, errEmpyUsers, errUnAuthorized } = errorMessageES.user
+// * Error messages
 
-const getAllUsers = () => {
-  const users = User.find()
-    .then((res) => {
-      if (res.length === 0) {
-        throw new CustomError(404, errEmpyUsers)
-      }
-      return res
-    })
-    .catch((error) => {
-      throw new CustomError(error?.status ?? 500, error?.message ?? error)
-    })
-  return users
+const { errEmpyUser, errEmpyUsers, errUnAuthorized } = errorMessageES.user
+
+// * Return all users from DB
+
+const getAllUsers = async () => {
+  try {
+    const users = await UserModel.find({})
+
+    if (users.length === 0) {
+      throw new CustomError(404, errEmpyUsers)
+    }
+    return users
+  } catch (error) {
+    throw new CustomError(error?.status ?? 500, error?.message ?? error)
+  }
 }
 
-const getOneUser = (userId) => {
-  const user = User.findById(userId)
-    .then((res) => {
-      if (!res) {
-        throw new CustomError(401, errUnAuthorized)
-      }
-      return res
-    })
-    .catch((error) => {
-      throw new CustomError(error?.status ?? 500, error?.message ?? error)
-    })
-  return user
+// * Return boolean if exist
+
+const userExist = (userId) => {
+  try {
+    const exist = UserModel.exists({ _id: userId })
+    return exist
+  } catch (error) {
+    throw new CustomError(error?.status ?? 500, error?.message ?? error)
+  }
 }
 
-const createNewUser = (newUser) => {
-  const { email, password } = newUser
-  const user = User.findOne({ email })
-    .then(userChecked => {
-      if (userChecked) {
-        throw new CustomError(409, errEmailDuplicated)
-      }
-    })
-    .then(() => {
-      const passHassed = hash(password, SALT)
-        .then(p => p)
-      return passHassed
-    })
-    .then(passHassed => {
-      const userToInsert = {
-        ...newUser,
-        password: passHassed
-      }
-      const createdUser = new User(userToInsert)
-      createdUser.save()
-      return createdUser
-    })
-    .catch(error => {
-      throw new CustomError(error?.status ?? 500, error?.message ?? error)
-    })
-  return user
+// * Return one user from DB
+
+const getOneUser = async (userId) => {
+  try {
+    const user = UserModel.findById(userId).exec()
+
+    if (!user) {
+      throw new CustomError(401, errUnAuthorized)
+    }
+    return user
+  } catch (error) {
+    throw new CustomError(error?.status ?? 500, error?.message ?? error)
+  }
 }
 
-const updateOneUser = (userId, changes) => {
-  const userForUpdate = User.findByIdAndUpdate(userId, changes, { new: true })
-    .then(user => {
-      if (!user) {
-        throw new CustomError(404, errEmpyUser)
-      }
-      return user
-    })
-    .catch(error => {
-      throw new CustomError(error?.status ?? 500, error?.message ?? error)
-    })
-  return userForUpdate
+// * Update one user and return this users from DB
+
+const updateOneUser = async (userId, changes) => {
+  try {
+    const userForUpdate = await UserModel.findByIdAndUpdate(userId, changes, { new: true })
+    if (!userForUpdate) {
+      throw new CustomError(404, errEmpyUser)
+    }
+    return userForUpdate
+  } catch (error) {
+    throw new CustomError(error?.status ?? 500, error?.message ?? error)
+  }
 }
+
+// * Delete one user from DB
 
 const deleteOneUser = async (userId) => {
   try {
-    const userDeleted = await User.findByIdAndDelete(userId).exec()
+    const userDeleted = await UserModel.findByIdAndDelete(userId)
     if (!userDeleted) {
       throw new CustomError(404, errEmpyUser)
     }
@@ -89,9 +76,9 @@ const deleteOneUser = async (userId) => {
 }
 
 export default {
-  createNewUser,
   getAllUsers,
   getOneUser,
   updateOneUser,
-  deleteOneUser
+  deleteOneUser,
+  userExist
 }

@@ -15,7 +15,6 @@ export const errorMessageES = Object.freeze({
     errRoleEnum: 'No es un rol válido',
     errEmpyUsers: 'No existen usuarios',
     errEmpyUser: 'Este usuario no existe',
-    errEmailDuplicated: 'Ya existe un usuario con ese email registrado',
-    errNewPassEqualToOld: 'El nuevo password no puede ser igual al antiguo.'
+    errEmailDuplicated: 'Ya existe un usuario con ese email registrado'
   }
 })

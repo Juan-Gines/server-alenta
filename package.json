@@ -5,9 +5,11 @@
   "description": "Api rest web Alentà",
   "main": "src/index.js",
   "scripts": {
-    "dev": "node --watch src/index.js",
-    "start": "node src/index.js",
-    "lint": "eslint ."    
+    "dev": "cross-env NODE_ENV=developemnt node --watch src/index.js",
+    "start": "cross-env NODE_ENV=production node src/index.js",
+    "lint": "eslint .",
+    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules NODE_ENV=test jest --verbose",
+    "test:watch": "npm run test -- --watch"
   },
   "keywords": [],
   "author": "Juan Ginés Alentà",
@@ -36,11 +38,20 @@
     "#Models/*": "./src/models/*",
     "#Errors/*": "./src/middleware/errors/*",
     "#Lang/*": "./src/lang/*"
-  },  
+  },
   "devDependencies": {
-    "standard": "17.1.0"
+    "cross-env": "^7.0.3",
+    "jest": "^29.6.1",
+    "standard": "17.1.0",
+    "supertest": "^6.3.3"
   },
   "eslintConfig": {
-    "extends": "./node_modules/standard/eslintrc.json"
+    "extends": "./node_modules/standard/eslintrc.json",
+    "env": {
+      "jest": true
+    }
+  },
+  "jest": {
+    "testEnvironment": "node"
   }
 }

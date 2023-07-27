@@ -1,8 +1,9 @@
+import express from 'express'
 import userLoginDTO from '#Auth/login.js'
 import userRegisterDTO from '#Auth/register.js'
-import userLoginController from '#Controllers/auth/login.js'
-import registerController from '#Controllers/auth/register.js'
-import express from 'express'
+import userUpdatePasswordDTO from '#Auth/updatePassword.js'
+import userExtractor from '#Auth/userExtractor.js'
+import { registerController, updatePasswordController, userLoginController } from '#Controllers/authController.js'
 
 const router = express.Router()
 
@@ -13,5 +14,7 @@ router
   .post('/login', userLoginDTO, userLoginController)
 
   .post('/register', userRegisterDTO, registerController)
+
+  .patch('/password', userExtractor, userUpdatePasswordDTO, updatePasswordController)
 
 export default router

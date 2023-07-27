@@ -1,5 +1,7 @@
 import userService from '#Services/userService.js'
 
+// * Controller return all users
+
 const getAllUsers = (req, res, next) => {
   userService
     .getAllUsers()
@@ -9,28 +11,46 @@ const getAllUsers = (req, res, next) => {
     })
 }
 
+// * Controller return one user
+
 const getOneUser = async (req, res, next) => {
   userService
-    .getOneUser(req.id)
+    .getOneUser(req.userId)
     .then((data) => res.json({ status: 'OK', data }))
     .catch((error) => {
       next(error)
     })
 }
 
-const updateOneUser = (req, res, next) => {
-  const { body, id } = req
+// * Controller update personal data user
+
+const updatePersonalDataUser = (req, res, next) => {
+  const { body, userId } = req
   userService
-    .updateOneUser(id, body)
+    .updateOneUser(userId, body)
     .then((updatedUser) => res.json({ status: 'OK', data: updatedUser }))
     .catch((error) => {
       next(error)
     })
 }
 
+// * Controller update image user
+
+const updateImageUser = (req, res, next) => {
+  const { body, userId } = req
+  userService
+    .updateOneUser(userId, body)
+    .then((updatedUser) => res.json({ status: 'OK', data: updatedUser }))
+    .catch((error) => {
+      next(error)
+    })
+}
+
+// * Delete user
+
 const deleteOneUser = (req, res, next) => {
   userService
-    .deleteOneUser(req.id)
+    .deleteOneUser(req.userId)
     .then((deletedUser) => {
       res.json({ status: 'OK', data: deletedUser })
     })
@@ -42,6 +62,7 @@ const deleteOneUser = (req, res, next) => {
 export {
   getAllUsers,
   getOneUser,
-  updateOneUser,
+  updatePersonalDataUser,
+  updateImageUser,
   deleteOneUser
 }

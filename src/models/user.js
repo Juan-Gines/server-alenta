@@ -1,6 +1,8 @@
 import mongoose, { model } from 'mongoose'
 const { Schema } = mongoose
 
+// * Schema from UserModel
+
 const userSchema = new Schema({
   name: { type: String, require: true, minLength: 4, maxLength: 25 },
   surname: { type: String, minLength: 4, maxLength: 50 },
@@ -17,6 +19,7 @@ userSchema.set('toJSON', {
     returnedObject.id = returnedObject._id
     delete returnedObject._id
     delete returnedObject.__v
+    delete returnedObject.password
   }
 })
 

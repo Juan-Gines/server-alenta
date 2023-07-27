@@ -1,7 +1,11 @@
 import { Type } from '@sinclair/typebox'
 import { errorMessageES } from '#Lang/es/errorMessage.js'
 
+// ! Error messages
+
 const { errTypeString, errMinLength, errMaxLength, errRoleEnum, errFormatEmail, errFormatPassword } = errorMessageES.user
+
+// ? Error types validation
 
 export const nameDTOSchema = Type.String({
   minLength: 4,

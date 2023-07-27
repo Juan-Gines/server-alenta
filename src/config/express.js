@@ -12,8 +12,8 @@ expressApp.use(express.json())
 expressApp.use(cors())
 
 // Routes
-expressApp.use('/users', userRouter)
-expressApp.use('/auth', authRouter)
+expressApp.use('/api/users', userRouter)
+expressApp.use('/api/auth', authRouter)
 
 // Errors
 expressApp.use(notFound)

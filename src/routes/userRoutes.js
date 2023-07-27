@@ -1,7 +1,8 @@
 import express from 'express'
-import { getAllUsers, getOneUser, updateOneUser, deleteOneUser } from '#Controllers/userController.js'
-import userUpdateDataDTO from '#DTO/user/updateUser.js'
+import { getAllUsers, getOneUser, deleteOneUser, updatePersonalDataUser, updateImageUser } from '#Controllers/userController.js'
+import userUpdatePersonalDataDTO from '#DTO/user/updatePersonalData.js'
 import userExtractor from '#Auth/userExtractor.js'
+import userUpdateImageDTO from '#DTO/user/updateImage.js'
 
 const router = express.Router()
 
@@ -9,11 +10,13 @@ const router = express.Router()
   * Users Routes */
 router
 
-  .get('/', getAllUsers)
+  .get('/', userExtractor, getAllUsers)
 
-  .get('/perfil', userExtractor, getOneUser)
+  .get('/profile', userExtractor, getOneUser)
 
-  .patch('/', userExtractor, userUpdateDataDTO, updateOneUser)
+  .patch('/personaldata', userExtractor, userUpdatePersonalDataDTO, updatePersonalDataUser)
+
+  .patch('/image', userExtractor, userUpdateImageDTO, updateImageUser)
 
   .delete('/', userExtractor, deleteOneUser)
 

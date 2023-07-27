@@ -1,12 +1,19 @@
 import connectDB from '#Config/db.js'
 import '#Config/env.js'
-import httpServer from '#Config/http.js'
+import expressApp from '#Config/express.js'
 
-const bootstrap = async () => {
-  await connectDB(process.env.MONGODB_URL)
-  httpServer.listen(process.env.PORT, () => {
-    console.log(`Servidor escuchando en el puerto ${process.env.PORT}`)
-  })
-}
+const { MONGODB_URL, MONGODB_URL_TEST, NODE_ENV } = process.env
 
-bootstrap()
+// ? Utilizamos otra base de datos para el test
+
+const connectionString = NODE_ENV === 'test'
+  ? MONGODB_URL_TEST
+  : MONGODB_URL
+
+await connectDB(connectionString)
+
+const server = expressApp.listen(process.env.PORT, () => {
+  console.log(`Servidor escuchando en el puerto http://localhost:${process.env.PORT}`)
+})
+
+export { expressApp, server }
