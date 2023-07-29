@@ -3,6 +3,7 @@ import { getAllUsers, getOneUser, deleteOneUser, updatePersonalDataUser, updateI
 import userUpdatePersonalDataDTO from '#DTO/user/updatePersonalData.js'
 import userExtractor from '#Auth/userExtractor.js'
 import userUpdateImageDTO from '#DTO/user/updateImage.js'
+import trimBody from '#DTO/trimBody.js'
 
 const router = express.Router()
 
@@ -14,9 +15,9 @@ router
 
   .get('/profile', userExtractor, getOneUser)
 
-  .patch('/personaldata', userExtractor, userUpdatePersonalDataDTO, updatePersonalDataUser)
+  .patch('/personaldata', trimBody, userExtractor, userUpdatePersonalDataDTO, updatePersonalDataUser)
 
-  .patch('/image', userExtractor, userUpdateImageDTO, updateImageUser)
+  .patch('/image', trimBody, userExtractor, userUpdateImageDTO, updateImageUser)
 
   .delete('/', userExtractor, deleteOneUser)
 

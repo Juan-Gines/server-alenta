@@ -4,12 +4,12 @@ const { Schema } = mongoose
 // * Schema from UserModel
 
 const userSchema = new Schema({
-  name: { type: String, require: true, minLength: 4, maxLength: 25 },
-  surname: { type: String, minLength: 4, maxLength: 50 },
-  image: { type: String, minLength: 4, maxLength: 50 },
-  email: { type: String, require: true, unique: true },
-  role: { type: String, enum: ['user', 'family', 'admin', 'friend'], default: 'user', require: true },
-  password: { type: String, require: true }
+  name: { type: String, trim: true, require: true, minLength: 4, maxLength: 25 },
+  surname: { type: String, trim: true, minLength: 4, maxLength: 50 },
+  image: { type: String, trim: true, minLength: 4, maxLength: 50 },
+  email: { type: String, trim: true, lowercase: true, require: true, unique: true },
+  role: { type: String, trim: true, enum: ['user', 'family', 'admin', 'friend'], default: 'user', require: true },
+  password: { type: String, trim: true, require: true }
 }, {
   timestamps: true
 })

@@ -7,7 +7,7 @@ import authService from '#Services/authService.js'
 const userLoginController = (req, res, next) => {
   const { email, password } = req.body
   authService
-    .loginUser(email, password)
+    .loginUser(email.toLowerCase(), password)
     .then(log => res.json({ status: 'OK', data: log }))
     .catch((error) => {
       next(error)

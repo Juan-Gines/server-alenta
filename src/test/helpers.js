@@ -9,7 +9,10 @@ export const badUser = Object.freeze({
   badPassMinLength: 'Tefsa',
   nonexistenEmail: 'mario@hotmail.com',
   uniqueEmail: 'juan@hotmail.com',
-  type: { hola: 'malo' }
+  type: { hola: 'malo' },
+  trimEmailValue: ' manuel@test.com  ',
+  trimPassValue: ' Test1234  ',
+  trimNameValue: ' manuel  '
 })
 
 // Usuarios iniciales para el test
@@ -44,9 +47,9 @@ export const passwordChange = {
 
 // Obtener token
 
-export const getToken = async () => {
+export const getToken = async (num = 1) => {
   const login = await api.post('/api/auth/login').send({
-    email: initialUsers[1].email,
+    email: initialUsers[num].email,
     password: userToInsert.password
   })
   return login.body.data.token
@@ -54,7 +57,11 @@ export const getToken = async () => {
 
 // Token erroneo
 
-export const errToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0YzExNDRhNDNmNmRlZmZlYTI5NGRmZCIsInVzZXJuYW1lIjoiSnVhbiIsImlhdCI6MTY5MDQ4NzM1OCwiZXhwIjoxNjkwNDkwOTU4fQ.mmz5v6XewPIpyQpmE6AOv8YUFznSbZOdKEcyMDhEAAM'
+export const errTokenExpired = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0YzExNDRhNDNmNmRlZmZlYTI5NGRmZCIsInVzZXJuYW1lIjoiSnVhbiIsImlhdCI6MTY5MDQ4NDc3NSwiZXhwIjoxNjkwNDg4Mzc1fQ.ntB8VXmGWSFc0h0jPALnH6aG8C0j8-5WKaG3wJDhCgc'
+
+// Token usuario no existe
+
+export const errTokenNoUser = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0YzQzZDE2MGEwNjI4ZDUxMmIxMTljNiIsInVzZXJuYW1lIjoiTWlndWVsIiwiaWF0IjoxNjkwNjM2NTkzfQ.KziBbN8ySE58YbIIOE3-8XbUM0JHyw6_jyGe5cUBMrM'
 
 // Obtener un get all
 

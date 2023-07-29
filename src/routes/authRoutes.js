@@ -4,6 +4,7 @@ import userRegisterDTO from '#Auth/register.js'
 import userUpdatePasswordDTO from '#Auth/updatePassword.js'
 import userExtractor from '#Auth/userExtractor.js'
 import { registerController, updatePasswordController, userLoginController } from '#Controllers/authController.js'
+import trimBody from '#DTO/trimBody.js'
 
 const router = express.Router()
 
@@ -11,10 +12,10 @@ const router = express.Router()
 
 router
 
-  .post('/login', userLoginDTO, userLoginController)
+  .post('/login', trimBody, userLoginDTO, userLoginController)
 
-  .post('/register', userRegisterDTO, registerController)
+  .post('/register', trimBody, userRegisterDTO, registerController)
 
-  .patch('/password', userExtractor, userUpdatePasswordDTO, updatePasswordController)
+  .patch('/password', trimBody, userExtractor, userUpdatePasswordDTO, updatePasswordController)
 
 export default router

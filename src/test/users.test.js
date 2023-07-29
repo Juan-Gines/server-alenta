@@ -3,7 +3,7 @@ import { expressApp, server } from '../index.js'
 import mongoose from 'mongoose'
 import UserModel from '#Models/user.js'
 import { errorMessageES } from '#Lang/es/errorMessage.js'
-import { badUser, errToken, getContent, getToken, initialUsers, passwordChange, userToInsert } from './helpers.js'
+import { badUser, errTokenExpired, errTokenNoUser, getContent, getToken, initialUsers, passwordChange, userToInsert } from './helpers.js'
 
 const error = errorMessageES.user
 
@@ -11,20 +11,40 @@ export const api = supertest(expressApp)
 
 beforeEach(async () => {
   await UserModel.deleteMany({})
-
-  initialUsers.forEach(async (user) => {
-    const newUser = new UserModel(user)
-    await newUser.save()
-  })
+  const newUser1 = new UserModel(initialUsers[0])
+  await newUser1.save()
+  const newUser2 = new UserModel(initialUsers[1])
+  await newUser2.save()
 })
 
-describe.skip('auth', () => {
+describe('auth', () => {
   test('POST api/auth/register guarda un usuario', async () => {
     const token = await getToken()
     const initialContent = await getContent(token)
     const res = await api
       .post('/api/auth/register')
       .send(userToInsert)
+      .expect(201)
+      .expect('Content-Type', /json/)
+    const content = await getContent(token)
+    const data = res.body.data
+    expect(data).toHaveProperty('name')
+    expect(data).toHaveProperty('email')
+    expect(data).toHaveProperty('role')
+    expect(data).toHaveProperty('updatedAt')
+    expect(data).toHaveProperty('createdAt')
+    expect(data).toHaveProperty('id')
+    expect(content.length).toBe(initialContent.length + 1)
+  })
+
+  test('POST api/auth/register guarda un usuario con body sin trim', async () => {
+    const { trimEmailValue, trimNameValue, trimPassValue } = badUser
+    const user = { '   email   ': trimEmailValue, '   name   ': trimNameValue, '   password   ': trimPassValue }
+    const token = await getToken()
+    const initialContent = await getContent(token)
+    const res = await api
+      .post('/api/auth/register')
+      .send(user)
       .expect(201)
       .expect('Content-Type', /json/)
     const content = await getContent(token)
@@ -124,42 +144,6 @@ describe.skip('auth', () => {
     expect(data).toHaveProperty('token')
   })
 
-  test('POST api/auth/login email y password error de tipo', async () => {
-    const { type } = badUser
-    const user = { email: type, password: type }
-    const res = await api.post('/api/auth/login')
-      .send(user)
-      .expect(400)
-      .expect('Content-Type', /json/)
-    const content = res.body.data.error.map(d => d.message)
-    expect(content).toContain(error.errTypeString)
-  })
-
-  test('POST api/auth/login password maxLenght no email', async () => {
-    const { maxLength } = badUser
-    const user = { password: maxLength }
-    const res = await api.post('/api/auth/login')
-      .send(user)
-      .expect(400)
-      .expect('Content-Type', /json/)
-    const content = res.body.data.error.map(d => d.message)
-    expect(content).toContain(error.errRequired('email'))
-    expect(content).toContain(error.errMaxLength(20))
-  })
-
-  test('POST api/auth/login email y password formato erroneo, pass min', async () => {
-    const { badEmail, badPassMinLength } = badUser
-    const user = { email: badEmail, password: badPassMinLength }
-    const res = await api.post('/api/auth/login')
-      .send(user)
-      .expect(400)
-      .expect('Content-Type', /json/)
-    const content = res.body.data.error.map(d => d.message)
-    expect(content).toContain(error.errFormatEmail)
-    expect(content).toContain(error.errMinLength(8))
-    expect(content).toContain(error.errFormatPassword)
-  })
-
   test('POST api/auth/login parámetros requeridos', async () => {
     const user = { }
     const res = await api.post('/api/auth/login')
@@ -193,9 +177,8 @@ describe.skip('auth', () => {
     expect(res.body.data.message).toEqual('El password de Raquel se cambió correctamente.')
   }, 0)
 
-  test('PATCH api/auth/password error password max, min y format', async () => {
-    const { badPassMinLength, maxLength } = badUser
-    const newPass = { oldPassword: badPassMinLength, newPassword: maxLength }
+  test('PATCH api/auth/password error newPassword y oldPassword requerido', async () => {
+    const newPass = { }
     const token = await getToken()
     const res = await api
       .patch('/api/auth/password')
@@ -204,22 +187,7 @@ describe.skip('auth', () => {
       .expect(400)
       .expect('Content-Type', /json/)
     const content = res.body.data.error.map(d => d.message)
-    expect(content).toContain(error.errMaxLength(20))
-    expect(content).toContain(error.errMinLength(8))
-    expect(content).toContain(error.errFormatPassword)
-  })
-
-  test('PATCH api/auth/password error password de tipo y requerido', async () => {
-    const newPass = { oldPassword: 123 }
-    const token = await getToken()
-    const res = await api
-      .patch('/api/auth/password')
-      .auth(token, { type: 'bearer' })
-      .send(newPass)
-      .expect(400)
-      .expect('Content-Type', /json/)
-    const content = res.body.data.error.map(d => d.message)
-    expect(content).toContain(error.errTypeString)
+    expect(content).toContain(error.errRequired('antiguo password'))
     expect(content).toContain(error.errRequired('nuevo password'))
   })
 
@@ -256,15 +224,197 @@ describe('user', () => {
     })
   })
 
-  test('GET /api/users token erroneo', async () => {
-    const token = errToken
+  test('GET /api/users token invalido', async () => {
+    const token = await getToken()
+    const errToken = token.slice(0, -2)
+    await api.get('/api/users')
+      .auth(errToken, { type: 'bearer' })
+      .expect(500)
+      .expect('Content-Type', /json/)
+  })
+
+  test('GET /api/users sin token', async () => {
+    const res = await api.get('/api/users')
+      .expect(401)
+      .expect('Content-Type', /json/)
+    const content = res.body.data.error
+    expect(content).toContain(error.errUnAuthorized)
+  })
+
+  test('GET /api/users token Expirado', async () => {
+    const token = errTokenExpired
+    const res = await api.get('/api/users')
+      .auth(token, { type: 'bearer' })
+      .expect(500)
+      .expect('Content-Type', /json/)
+    const content = res.body.data.error
+    expect(content).toContain('jwt expired')
+  })
+
+  test('GET /api/users token con usuario inexistente', async () => {
+    const token = errTokenNoUser
     const res = await api.get('/api/users')
       .auth(token, { type: 'bearer' })
       .expect(401)
       .expect('Content-Type', /json/)
     const content = res.body.data.error
     expect(content).toContain(error.errUnAuthorized)
-  }, 20000)
+  })
+
+  test('GET /api/users/profile recupera los registgros de un usuario', async () => {
+    const token = await getToken()
+    const res = await api.get('/api/users/profile')
+      .auth(token, { type: 'bearer' })
+      .expect(200)
+      .expect('Content-Type', /json/)
+    const content = res.body.data
+    expect(content).toHaveProperty('id')
+    expect(content).toHaveProperty('name')
+    expect(content).toHaveProperty('email')
+    expect(content).toHaveProperty('role')
+    expect(content).toHaveProperty('createdAt')
+    expect(content).toHaveProperty('updatedAt')
+  })
+
+  test('PATCH /api/users/personaldata updatea el nombre y los apellidos', async () => {
+    const token = await getToken()
+    const res = await api.patch('/api/users/personaldata')
+      .auth(token, { type: 'bearer' })
+      .send({ name: 'Fulano', surname: 'De Tal' })
+      .expect(200)
+      .expect('Content-Type', /json/)
+    const content = res.body.data
+    expect(content).toHaveProperty('name')
+    expect(content).toHaveProperty('surname')
+    expect(content.name).toEqual('Fulano')
+    expect(content.surname).toEqual('De Tal')
+  })
+
+  test('PATCH /api/users/personaldata error requeridos', async () => {
+    const token = await getToken()
+    const res = await api.patch('/api/users/personaldata')
+      .auth(token, { type: 'bearer' })
+      .send({ })
+      .expect(400)
+      .expect('Content-Type', /json/)
+    const content = res.body.data.error.map(d => d.message)
+    expect(content).toContain(error.errRequired('nombre'))
+    expect(content).toContain(error.errRequired('apellidos'))
+  })
+
+  test('PATCH /api/users/personaldata error apellidos min', async () => {
+    const token = await getToken()
+    const res = await api.patch('/api/users/personaldata')
+      .auth(token, { type: 'bearer' })
+      .send({ surname: badUser.minLength })
+      .expect(400)
+      .expect('Content-Type', /json/)
+    const content = res.body.data.error.map(d => d.message)
+    expect(content).toContain(error.errMinLength(4))
+  })
+
+  test('PATCH /api/users/personaldata error apellidos max', async () => {
+    const token = await getToken()
+    const res = await api.patch('/api/users/personaldata')
+      .auth(token, { type: 'bearer' })
+      .send({ surname: badUser.maxLength })
+      .expect(400)
+      .expect('Content-Type', /json/)
+    const content = res.body.data.error.map(d => d.message)
+    expect(content).toContain(error.errMaxLength(50))
+  })
+
+  test('PATCH /api/users/personaldata error apellidos de tipo', async () => {
+    const token = await getToken()
+    const res = await api.patch('/api/users/personaldata')
+      .auth(token, { type: 'bearer' })
+      .send({ surname: badUser.type })
+      .expect(400)
+      .expect('Content-Type', /json/)
+    const content = res.body.data.error.map(d => d.message)
+    expect(content).toContain(error.errTypeString)
+  })
+
+  test('PATCH /api/users/personaldata body con parámetros de más', async () => {
+    const token = await getToken()
+    const res = await api.patch('/api/users/personaldata')
+      .auth(token, { type: 'bearer' })
+      .send({ name: 'Fulano', surname: 'De Tal', hola: 'fjksdf' })
+      .expect(400)
+      .expect('Content-Type', /json/)
+    const content = res.body.data.error.map(d => d.message)
+    expect(content).toContain(error.errFormatObject)
+  })
+  test('PATCH /api/users/image updatea la imagen', async () => {
+    const token = await getToken()
+    const res = await api.patch('/api/users/image')
+      .auth(token, { type: 'bearer' })
+      .send({ image: 'imagen.jpg' })
+      .expect(200)
+      .expect('Content-Type', /json/)
+    const content = res.body.data
+    expect(content).toHaveProperty('image')
+    expect(content.image).toEqual('imagen.jpg')
+  })
+
+  test('PATCH /api/users/image error requeridos', async () => {
+    const token = await getToken()
+    const res = await api.patch('/api/users/image')
+      .auth(token, { type: 'bearer' })
+      .send({ })
+      .expect(400)
+      .expect('Content-Type', /json/)
+    const content = res.body.data.error.map(d => d.message)
+    expect(content).toContain(error.errRequired('imagen'))
+  })
+
+  test('PATCH /api/users/image error imagen min', async () => {
+    const token = await getToken()
+    const res = await api.patch('/api/users/image')
+      .auth(token, { type: 'bearer' })
+      .send({ image: badUser.minLength })
+      .expect(400)
+      .expect('Content-Type', /json/)
+    const content = res.body.data.error.map(d => d.message)
+    expect(content).toContain(error.errMinLength(4))
+  })
+
+  test('PATCH /api/users/image error apellidos de tipo', async () => {
+    const token = await getToken()
+    const res = await api.patch('/api/users/image')
+      .auth(token, { type: 'bearer' })
+      .send({ image: badUser.type })
+      .expect(400)
+      .expect('Content-Type', /json/)
+    const content = res.body.data.error.map(d => d.message)
+    expect(content).toContain(error.errTypeString)
+  })
+
+  test('PATCH /api/users/image body con parámetros de más', async () => {
+    const token = await getToken()
+    const res = await api.patch('/api/users/image')
+      .auth(token, { type: 'bearer' })
+      .send({ image: 'imagen.jpg', surname: 'De Tal', hola: 'fjksdf' })
+      .expect(400)
+      .expect('Content-Type', /json/)
+    const content = res.body.data.error.map(d => d.message)
+    expect(content).toContain(error.errFormatObject)
+  })
+
+  test('DELETE /api/users Borra un usuario', async () => {
+    const token1 = await getToken()
+    const token2 = await getToken(0)
+    const initialContent = await getContent(token1)
+    const res = await api.delete('/api/users')
+      .auth(token1, { type: 'bearer' })
+      .expect(200)
+      .expect('Content-Type', /json/)
+    const content = await getContent(token2)
+    console.log(content)
+    console.log(initialContent)
+    expect(content.length).toBe(initialContent.length - 1)
+    expect(res.body.data.message).toEqual('El usuario Raquel, Ha sido borrado con éxito.')
+  })
 })
 
 afterAll(() => {

@@ -11,17 +11,16 @@ const { errUnAuthorized } = errorMessageES.user
 
 const userExtractor = async (req, res, next) => {
   const { authorization } = req.headers
-  if (!authorization) {
-    throw new CustomError(401, errUnAuthorized)
-  }
-
-  const token = authorization.split(' ')[1]
-
-  if (!token) {
-    throw new CustomError(401, errUnAuthorized)
-  }
-
   try {
+    if (!authorization) {
+      throw new CustomError(401, errUnAuthorized)
+    }
+
+    const token = authorization.split(' ')[1]
+
+    if (!token) {
+      throw new CustomError(401, errUnAuthorized)
+    }
     const decodedToken = jwt.verify(token, process.env.JWT_PRIVATE_KEY)
     const userExist = await userService.userExist(decodedToken.id)
     if (!userExist) {
@@ -30,7 +29,7 @@ const userExtractor = async (req, res, next) => {
     req.userId = decodedToken.id
     next()
   } catch (error) {
-    throw new CustomError(401, errUnAuthorized)
+    next(error)
   }
 }
 
