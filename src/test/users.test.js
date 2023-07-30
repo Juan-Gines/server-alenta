@@ -3,7 +3,7 @@ import { expressApp, server } from '../index.js'
 import mongoose from 'mongoose'
 import UserModel from '#Models/user.js'
 import { errorMessageES } from '#Lang/es/errorMessage.js'
-import { badUser, errTokenExpired, errTokenNoUser, getContent, getToken, initialUsers, passwordChange, userToInsert } from './helpers.js'
+import { badUser, errTokenExpired, errTokenNoUser, getContent, getToken, initialUsers, passwordChange, userToInsert } from './helpers/user.js'
 
 const error = errorMessageES.user
 
@@ -410,8 +410,6 @@ describe('user', () => {
       .expect(200)
       .expect('Content-Type', /json/)
     const content = await getContent(token2)
-    console.log(content)
-    console.log(initialContent)
     expect(content.length).toBe(initialContent.length - 1)
     expect(res.body.data.message).toEqual('El usuario Raquel, Ha sido borrado con éxito.')
   })

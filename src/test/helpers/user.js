@@ -1,4 +1,4 @@
-import { api } from './users.test.js'
+import { api } from '../users.test.js'
 
 // Casos de uso de errores
 
