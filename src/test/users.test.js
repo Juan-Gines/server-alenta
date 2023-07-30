@@ -5,7 +5,7 @@ import UserModel from '#Models/user.js'
 import { errorMessageES } from '#Lang/es/errorMessage.js'
 import { badUser, errTokenExpired, errTokenNoUser, getContent, getToken, initialUsers, passwordChange, userToInsert } from './helpers/user.js'
 
-const error = errorMessageES.user
+const error = errorMessageES
 
 export const api = supertest(expressApp)
 
@@ -191,6 +191,19 @@ describe('auth', () => {
     expect(content).toContain(error.errRequired('nuevo password'))
   })
 
+  test('PATCH api/auth/password error newPassword y oldPassword iguales', async () => {
+    const newPass = { oldPassword: 'Test1234', newPassword: 'Test1234' }
+    const token = await getToken()
+    const res = await api
+      .patch('/api/auth/password')
+      .auth(token, { type: 'bearer' })
+      .send(newPass)
+      .expect(400)
+      .expect('Content-Type', /json/)
+    const content = res.body.data.error
+    expect(content).toContain(error.errNewPassEqualToOld)
+  })
+
   test('PATCH api/auth/password error parámetros de más', async () => {
     const newPass = { ...passwordChange, hola: 'TREe4533' }
     const token = await getToken()
@@ -227,10 +240,12 @@ describe('user', () => {
   test('GET /api/users token invalido', async () => {
     const token = await getToken()
     const errToken = token.slice(0, -2)
-    await api.get('/api/users')
+    const res = await api.get('/api/users')
       .auth(errToken, { type: 'bearer' })
-      .expect(500)
+      .expect(401)
       .expect('Content-Type', /json/)
+    const content = res.body.data.error.message
+    expect(content).toContain('invalid signature')
   })
 
   test('GET /api/users sin token', async () => {
@@ -245,9 +260,9 @@ describe('user', () => {
     const token = errTokenExpired
     const res = await api.get('/api/users')
       .auth(token, { type: 'bearer' })
-      .expect(500)
+      .expect(401)
       .expect('Content-Type', /json/)
-    const content = res.body.data.error
+    const content = res.body.data.error.message
     expect(content).toContain('jwt expired')
   })
 

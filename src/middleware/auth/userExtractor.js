@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken'
 
 // ! Error messages
 
-const { errUnAuthorized } = errorMessageES.user
+const { errUnAuthorized } = errorMessageES
 
 // * Token verification return id
 
@@ -13,23 +13,24 @@ const userExtractor = async (req, res, next) => {
   const { authorization } = req.headers
   try {
     if (!authorization) {
-      throw new CustomError(401, errUnAuthorized)
+      throw errUnAuthorized
     }
 
     const token = authorization.split(' ')[1]
 
     if (!token) {
-      throw new CustomError(401, errUnAuthorized)
+      throw errUnAuthorized
     }
     const decodedToken = jwt.verify(token, process.env.JWT_PRIVATE_KEY)
     const userExist = await userService.userExist(decodedToken.id)
     if (!userExist) {
-      throw new CustomError(401, errUnAuthorized)
+      throw errUnAuthorized
     }
     req.userId = decodedToken.id
     next()
   } catch (error) {
-    next(error)
+    const errorCustom = new CustomError(401, error)
+    next(errorCustom)
   }
 }
 

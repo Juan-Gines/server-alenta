@@ -3,7 +3,7 @@ import { errorMessageES } from '#Lang/es/errorMessage.js'
 
 // ! Error messages
 
-const { errTypeString, errMinLength, errMaxLength, errRoleEnum, errFormatEmail, errFormatPassword } = errorMessageES.user
+const { errTypeString, errMinLength, errMaxLength, errRoleEnum, errFormatEmail, errFormatPassword } = errorMessageES
 
 // ? Error types validation
 

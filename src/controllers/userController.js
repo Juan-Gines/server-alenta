@@ -51,9 +51,7 @@ const updateImageUser = (req, res, next) => {
 const deleteOneUser = (req, res, next) => {
   userService
     .deleteOneUser(req.userId)
-    .then((deletedUser) => {
-      res.json({ status: 'OK', data: deletedUser })
-    })
+    .then((deletedUser) => res.json({ status: 'OK', data: deletedUser }))
     .catch((error) => {
       next(error)
     })

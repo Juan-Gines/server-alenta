@@ -8,7 +8,7 @@ import { errorMessageES } from '#Lang/es/errorMessage.js'
 
 // ! error Messages
 
-const { errFormatObject, errRequired } = errorMessageES.user
+const { errFormatObject, errRequired } = errorMessageES
 
 // * Register Validation data
 

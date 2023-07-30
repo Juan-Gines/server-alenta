@@ -8,7 +8,7 @@ import { errorMessageES } from '#Lang/es/errorMessage.js'
 
 // ! Error messages
 
-const { errFormatObject, errRequired } = errorMessageES.user
+const { errFormatObject, errRequired } = errorMessageES
 
 // * Login validation data
 

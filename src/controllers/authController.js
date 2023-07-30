@@ -20,8 +20,7 @@ const registerController = (req, res, next) => {
   const { body } = req
   authService
     .registerNewUser(body)
-    .then((createdUser) =>
-      res.status(201).json({ status: 'OK', data: createdUser })
+    .then((createdUser) => res.status(201).json({ status: 'OK', data: createdUser })
     )
     .catch((error) => {
       next(error)
@@ -34,7 +33,8 @@ const updatePasswordController = (req, res, next) => {
   const { body, userId } = req
   const { oldPassword, newPassword } = body
   if (oldPassword === newPassword) {
-    throw new CustomError(400, errorMessageES.user.errNewPassEqualToOld)
+    const error = new CustomError(400, errorMessageES.errNewPassEqualToOld)
+    next(error)
   }
   authService
     .updatePasswordUser(userId, body)

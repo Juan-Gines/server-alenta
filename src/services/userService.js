@@ -4,7 +4,7 @@ import { errorMessageES } from '#Lang/es/errorMessage.js'
 
 // * Error messages
 
-const { errEmpyUser, errEmpyUsers, errUnAuthorized } = errorMessageES.user
+const { errEmptyUser, errEmptyUsers, errUnAuthorized } = errorMessageES
 
 // * Return all users from DB
 
@@ -13,7 +13,7 @@ const getAllUsers = async () => {
     const users = await UserModel.find({})
 
     if (users.length === 0) {
-      throw new CustomError(404, errEmpyUsers)
+      throw new CustomError(404, errEmptyUsers)
     }
     return users
   } catch (error) {
@@ -53,7 +53,7 @@ const updateOneUser = async (userId, changes) => {
   try {
     const userForUpdate = await UserModel.findByIdAndUpdate(userId, changes, { new: true })
     if (!userForUpdate) {
-      throw new CustomError(404, errEmpyUser)
+      throw new CustomError(404, errEmptyUser)
     }
     return userForUpdate
   } catch (error) {
@@ -67,7 +67,7 @@ const deleteOneUser = async (userId) => {
   try {
     const userDeleted = await UserModel.findByIdAndDelete(userId)
     if (!userDeleted) {
-      throw new CustomError(404, errEmpyUser)
+      throw new CustomError(404, errEmptyUser)
     }
     return { message: `El usuario ${userDeleted.name}, Ha sido borrado con éxito.` }
   } catch (error) {
