@@ -2,6 +2,7 @@ import express from 'express'
 import cors from 'cors'
 import userRouter from '#Routes/userRoutes.js'
 import authRouter from '#Routes/authRoutes.js'
+import postRouter from '#Routes/postRoutes.js'
 import notFound from '#Errors/notFound.js'
 import handleErrors from '#Errors/handleErrors.js'
 
@@ -14,6 +15,7 @@ expressApp.use(cors())
 // Routes
 expressApp.use('/api/users', userRouter)
 expressApp.use('/api/auth', authRouter)
+expressApp.use('/api/posts', postRouter)
 
 // Errors
 expressApp.use(notFound)

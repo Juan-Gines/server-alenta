@@ -1,10 +1,11 @@
 import PostModel from '#Models/post.js'
 import { CustomError } from '#Errors/CustomError.js'
 import { errorMessageES } from '#Lang/es/errorMessage.js'
+import UserModel from '#Models/user.js'
 
 // * Error messages
 
-const { errEmpyPosts, errEmptyPost } = errorMessageES
+const { errEmpyPosts, errEmptyPost, errEmptyUser } = errorMessageES
 // * Return all users from DB
 
 const getAllPosts = async () => {
@@ -46,11 +47,19 @@ const getOnePost = async (postId) => {
 
 const createOnePost = async (userId, post) => {
   try {
-    const userForUpdate = await PostModel.findByIdAndUpdate(userId, post, { new: true })
-    if (!userForUpdate) {
-      throw new CustomError(404, errEmptyPost)
+    const user = await UserModel.findById(userId)
+    if (!user) {
+      throw new CustomError(404, errEmptyUser)
     }
-    return userForUpdate
+    const postToInsert = {
+      ...post,
+      user: userId
+    }
+    const newPost = new PostModel(postToInsert)
+    await newPost.save()
+    user.posts = user.posts.concat(newPost._id)
+    await user.save()
+    return newPost
   } catch (error) {
     throw new CustomError(error?.status ?? 500, error?.message ?? error)
   }
