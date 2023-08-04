@@ -29,7 +29,7 @@ const userExtractor = async (req, res, next) => {
     req.userId = decodedToken.id
     next()
   } catch (error) {
-    const errorCustom = new CustomError(401, error)
+    const errorCustom = new CustomError(error?.status ?? 401, error?.message ?? error)
     next(errorCustom)
   }
 }

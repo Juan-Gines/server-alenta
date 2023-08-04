@@ -1,8 +1,11 @@
-import { api } from '../users.test.js'
+import supertest from 'supertest'
+import { expressApp } from '../../index.js'
+
+const api = supertest(expressApp)
 
 // Casos de uso de errores
 
-export const badUser = Object.freeze({
+const badUser = Object.freeze({
   minLength: 'Te3',
   maxLength: 'lkfdhsfgdjlskhhsfdglkñjghfsdñgdfshñlkjfsdhgfdsñlkjfsdñlkgjhlkfdjñfdjklfldksjsflkgjflkfdjfldkñT4',
   badEmail: 'fdfdfd',
@@ -17,7 +20,7 @@ export const badUser = Object.freeze({
 
 // Usuarios iniciales para el test
 
-export const initialUsers = [
+const initialUsers = [
   {
     name: 'Juan',
     email: 'juan@test.com',
@@ -32,7 +35,7 @@ export const initialUsers = [
 
 // Usuario nuevo para insertar
 
-export const userToInsert = {
+const userToInsert = {
   name: 'manuel',
   email: 'manuel@test.com',
   password: 'Test1234'
@@ -40,14 +43,14 @@ export const userToInsert = {
 
 // Info para cambiar el password
 
-export const passwordChange = {
+const passwordChange = {
   oldPassword: 'Test1234',
   newPassword: 'Test123456'
 }
 
 // Obtener token
 
-export const getToken = async (num = 1) => {
+const getToken = async (num = 1) => {
   const login = await api.post('/api/auth/login').send({
     email: initialUsers[num].email,
     password: userToInsert.password
@@ -57,16 +60,28 @@ export const getToken = async (num = 1) => {
 
 // Token erroneo
 
-export const errTokenExpired = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0YzExNDRhNDNmNmRlZmZlYTI5NGRmZCIsInVzZXJuYW1lIjoiSnVhbiIsImlhdCI6MTY5MDQ4NDc3NSwiZXhwIjoxNjkwNDg4Mzc1fQ.ntB8VXmGWSFc0h0jPALnH6aG8C0j8-5WKaG3wJDhCgc'
+const errTokenExpired = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0YzExNDRhNDNmNmRlZmZlYTI5NGRmZCIsInVzZXJuYW1lIjoiSnVhbiIsImlhdCI6MTY5MDQ4NDc3NSwiZXhwIjoxNjkwNDg4Mzc1fQ.ntB8VXmGWSFc0h0jPALnH6aG8C0j8-5WKaG3wJDhCgc'
 
 // Token usuario no existe
 
-export const errTokenNoUser = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0YzQzZDE2MGEwNjI4ZDUxMmIxMTljNiIsInVzZXJuYW1lIjoiTWlndWVsIiwiaWF0IjoxNjkwNjM2NTkzfQ.KziBbN8ySE58YbIIOE3-8XbUM0JHyw6_jyGe5cUBMrM'
+const errTokenNoUser = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0YzQzZDE2MGEwNjI4ZDUxMmIxMTljNiIsInVzZXJuYW1lIjoiTWlndWVsIiwiaWF0IjoxNjkwNjM2NTkzfQ.KziBbN8ySE58YbIIOE3-8XbUM0JHyw6_jyGe5cUBMrM'
 
 // Obtener un get all
 
-export const getContent = async (token) => {
+const getContent = async (token) => {
   const content = await api.get('/api/users')
     .auth(token, { type: 'bearer' })
   return content.body.data
+}
+
+export {
+  api,
+  badUser,
+  initialUsers,
+  userToInsert,
+  passwordChange,
+  getToken,
+  errTokenExpired,
+  errTokenNoUser,
+  getContent
 }

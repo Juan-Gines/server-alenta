@@ -29,7 +29,7 @@ const createPost = async (req, res, next) => {
   const { body, userId } = req
   postService
     .createOnePost(userId, body)
-    .then((createdPost) => res.json({ status: 'OK', data: createdPost }))
+    .then((createdPost) => res.status(201).json({ status: 'OK', data: createdPost }))
     .catch((error) => {
       next(error)
     })
@@ -50,8 +50,10 @@ const updatePost = (req, res, next) => {
 // * Delete user
 
 const deletePost = (req, res, next) => {
+  const { userId } = req
+  const { postId } = req.params
   postService
-    .deleteOnePost(req.userId)
+    .deleteOnePost(userId, postId)
     .then((deletedPost) => res.json({ status: 'OK', data: deletedPost }))
     .catch((error) => {
       next(error)

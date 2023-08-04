@@ -8,7 +8,7 @@
     "dev": "cross-env NODE_ENV=developemnt node --watch src/index.js",
     "start": "cross-env NODE_ENV=production node src/index.js",
     "lint": "eslint .",
-    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules NODE_ENV=test jest --verbose",
+    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules NODE_ENV=test jest --verbose --runInBand",
     "test:watch": "npm run test -- --watch"
   },
   "keywords": [],
@@ -37,7 +37,8 @@
     "#DTO/*": "./src/middleware/dto/*",
     "#Models/*": "./src/models/*",
     "#Errors/*": "./src/middleware/errors/*",
-    "#Lang/*": "./src/lang/*"
+    "#Lang/*": "./src/lang/*",
+    "#Utils/*": "./src/utils/*"
   },
   "devDependencies": {
     "cross-env": "^7.0.3",

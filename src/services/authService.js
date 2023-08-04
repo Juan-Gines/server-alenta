@@ -7,7 +7,7 @@ import { SALT } from '#Constants/salt.js'
 
 // ! Error messages
 
-const { errLogin, errEmptyUser, errEmailDuplicated } = errorMessageES
+const { errLogin, errEmailDuplicated } = errorMessageES
 
 // * Update password this users from DB
 
@@ -62,9 +62,6 @@ const updatePasswordUser = async (userId, changes) => {
   const { oldPassword, newPassword } = changes
   try {
     const user = await UserModel.findById(userId)
-    if (!user) {
-      throw new CustomError(401, errEmptyUser)
-    }
     const correctPass = await compare(oldPassword, user.password)
     if (!correctPass) {
       throw new CustomError(401, errLogin)

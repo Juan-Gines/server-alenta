@@ -13,7 +13,8 @@
             "#DTO/*": ["./src/middleware/dto/*"],
             "#Models/*": ["./src/models/*"],
             "#Errors/*": ["./src/middleware/errors/*"],
-            "#Lang/*": ["./src/lang/*"]
+            "#Lang/*": ["./src/lang/*"],
+            "#Utils/*": ["./src/utils/*"]
         }
     }
 }

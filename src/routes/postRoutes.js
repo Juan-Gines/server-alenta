@@ -17,6 +17,6 @@ router
 
   .patch('/', trimBody, userExtractor, updatePost)
 
-  .delete('/', userExtractor, deletePost)
+  .delete('/:postId', userExtractor, deletePost)
 
 export default router

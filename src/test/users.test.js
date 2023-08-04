@@ -1,13 +1,10 @@
-import supertest from 'supertest'
-import { expressApp, server } from '../index.js'
+import { server } from '../index.js'
 import mongoose from 'mongoose'
 import UserModel from '#Models/user.js'
 import { errorMessageES } from '#Lang/es/errorMessage.js'
-import { badUser, errTokenExpired, errTokenNoUser, getContent, getToken, initialUsers, passwordChange, userToInsert } from './helpers/user.js'
+import { api, badUser, errTokenExpired, errTokenNoUser, getContent, getToken, initialUsers, passwordChange, userToInsert } from './helpers/user.js'
 
 const error = errorMessageES
-
-export const api = supertest(expressApp)
 
 beforeEach(async () => {
   await UserModel.deleteMany({})
@@ -144,6 +141,26 @@ describe('auth', () => {
     expect(data).toHaveProperty('token')
   })
 
+  test('POST api/auth/login email inexistente incorrecta', async () => {
+    const user = { email: 'gargamel@test.com', password: 'Test1234' }
+    const res = await api.post('/api/auth/login')
+      .send(user)
+      .expect(401)
+      .expect('Content-Type', /json/)
+    const data = res.body.data.error
+    expect(data).toContain(error.errLogin)
+  })
+
+  test('POST api/auth/login password incorrecta', async () => {
+    const user = { email: 'raquel@test.com', password: 'Test12345678' }
+    const res = await api.post('/api/auth/login')
+      .send(user)
+      .expect(401)
+      .expect('Content-Type', /json/)
+    const data = res.body.data.error
+    expect(data).toContain(error.errLogin)
+  })
+
   test('POST api/auth/login parámetros requeridos', async () => {
     const user = { }
     const res = await api.post('/api/auth/login')
@@ -175,6 +192,17 @@ describe('auth', () => {
       .expect(200)
       .expect('Content-Type', /json/)
     expect(res.body.data.message).toEqual('El password de Raquel se cambió correctamente.')
+  }, 0)
+
+  test('PATCH api/auth/password evalua el viejo password incorrecto', async () => {
+    const token = await getToken()
+    const res = await api
+      .patch('/api/auth/password')
+      .auth(token, { type: 'bearer' })
+      .send({ oldPassword: 'Test1254542', newPassword: 'Testfsd545411' })
+      .expect(401)
+      .expect('Content-Type', /json/)
+    expect(res.body.data.error).toEqual(error.errLogin)
   }, 0)
 
   test('PATCH api/auth/password error newPassword y oldPassword requerido', async () => {
@@ -244,7 +272,7 @@ describe('user', () => {
       .auth(errToken, { type: 'bearer' })
       .expect(401)
       .expect('Content-Type', /json/)
-    const content = res.body.data.error.message
+    const content = res.body.data.error
     expect(content).toContain('invalid signature')
   })
 
@@ -262,7 +290,7 @@ describe('user', () => {
       .auth(token, { type: 'bearer' })
       .expect(401)
       .expect('Content-Type', /json/)
-    const content = res.body.data.error.message
+    const content = res.body.data.error
     expect(content).toContain('jwt expired')
   })
 
@@ -360,6 +388,7 @@ describe('user', () => {
     const content = res.body.data.error.map(d => d.message)
     expect(content).toContain(error.errFormatObject)
   })
+
   test('PATCH /api/users/image updatea la imagen', async () => {
     const token = await getToken()
     const res = await api.patch('/api/users/image')
