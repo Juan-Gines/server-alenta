@@ -15,6 +15,7 @@ export const errorMessageES = Object.freeze({
   errEmailDuplicated: 'Ya existe un usuario con ese email registrado',
   errNewPassEqualToOld: 'El nuevo password no puede ser igual al antiguo.',
   errEmptyPosts: 'No existen posts',
-  errEmptyPost: 'Este post no existe'
+  errEmptyPost: 'Este post no existe',
+  errIdErroneo: 'El id que intenta buscar es erróneo'
 
 })

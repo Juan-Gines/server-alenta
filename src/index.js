@@ -16,4 +16,4 @@ const server = expressApp.listen(process.env.PORT, () => {
   console.log(`Servidor escuchando en el puerto http://localhost:${process.env.PORT}`)
 })
 
-export { expressApp, server }
+export default server

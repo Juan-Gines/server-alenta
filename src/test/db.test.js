@@ -1,5 +1,5 @@
 import mongoose from 'mongoose'
-import { server } from '../index.js'
+import server from '../index.js'
 import connectDB from '#Config/db.js'
 import { api, userToInsert } from './helpers/user.js'
 
@@ -8,6 +8,11 @@ beforeAll(async () => {
 
   const connectionString = process.env.MONGODB_URL_FAILED
   await connectDB(connectionString)
+})
+
+afterAll(async () => {
+  await mongoose.connection.close()
+  await server.close()
 })
 
 describe('DB', () => {
@@ -31,8 +36,4 @@ describe('DB', () => {
     const content = res.body.data.error
     expect(content).toContain('Client must be connected before running operations')
   })
-})
-
-afterAll(() => {
-  server.close()
 })

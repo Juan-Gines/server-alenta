@@ -6,43 +6,45 @@ import errObjectId from '#Utils/errObjectId.js'
 
 // * Error messages
 
-const { errEmpyPosts, errEmptyPost, errUnAuthorized } = errorMessageES
+const { errEmptyPosts, errEmptyPost, errUnAuthorized } = errorMessageES
 
 // * Return all users from DB
 
-const getAllPosts = async () => {
-  try {
-    const posts = await PostModel.find({})
-      .populate('user', {
-        name: 1,
-        email: 1
-      })
-
-    if (posts.length === 0) {
-      throw new CustomError(404, errEmpyPosts)
-    }
-    return posts
-  } catch (error) {
-    throw new CustomError(error?.status ?? 500, error?.message ?? error)
-  }
+const getAllPosts = () => {
+  return PostModel.find({})
+    .populate('user', {
+      name: 1,
+      email: 1
+    })
+    .then(posts => {
+      if (!posts?.length) {
+        throw new CustomError(404, errEmptyPosts)
+      }
+      return posts
+    })
+    .catch(error => {
+      throw new CustomError(error?.status ?? 500, error?.message ?? error)
+    })
 }
 
 // * Return one user from DB
 
-const getOnePost = async (postId) => {
-  try {
-    const post = PostModel.findById(postId)
-      .populate('user', {
-        name: 1,
-        email: 1
-      })
-    if (!post) {
-      throw new CustomError(404, errEmptyPost)
-    }
-    return post
-  } catch (error) {
-    throw new CustomError(error?.status ?? 500, error?.message ?? error)
-  }
+const getOnePost = (postId) => {
+  return PostModel.findById(postId)
+    .populate('user', {
+      name: 1,
+      email: 1
+    })
+    .then(post => {
+      if (!post) {
+        throw new CustomError(404, errEmptyPost)
+      }
+      return post
+    })
+    .catch(error => {
+      errObjectId(error)
+      throw new CustomError(error?.status ?? 500, error?.message ?? error)
+    })
 }
 
 // * Create one Post and return this post
@@ -79,7 +81,9 @@ const updateOnePost = async (userId, changes) => {
       surname: 1
     })
     if (!postForUpdate) {
-      throw new CustomError(401, errEmptyPost)
+      user.posts = user.posts.filter(p => !p.equals(id))
+      await user.save()
+      throw new CustomError(404, errEmptyPost)
     }
     return postForUpdate
   } catch (error) {
@@ -94,6 +98,9 @@ const deleteOnePost = async (userId, postId) => {
   try {
     const post = await PostModel.findById(postId)
     if (!post) {
+      const user = await UserModel.findById(userId)
+      user.posts = user.posts.filter(p => !p.equals(postId))
+      await user.save()
       throw new CustomError(404, errEmptyPost)
     }
     if (!post.user.equals(userId)) {

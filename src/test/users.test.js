@@ -1,29 +1,29 @@
-import { server } from '../index.js'
+import server from '../index.js'
 import mongoose from 'mongoose'
-import UserModel from '#Models/user.js'
 import { errorMessageES } from '#Lang/es/errorMessage.js'
-import { api, badUser, errTokenExpired, errTokenNoUser, getContent, getToken, initialUsers, passwordChange, userToInsert } from './helpers/user.js'
+import { api, badUser, errTokenExpired, errTokenNoUser, getUsers, getToken, initialUsers, passwordChange, userDBInit, userToInsert } from './helpers/user.js'
 
 const error = errorMessageES
 
 beforeEach(async () => {
-  await UserModel.deleteMany({})
-  const newUser1 = new UserModel(initialUsers[0])
-  await newUser1.save()
-  const newUser2 = new UserModel(initialUsers[1])
-  await newUser2.save()
+  await userDBInit()
+})
+
+afterAll(async () => {
+  await mongoose.connection.close()
+  await server.close()
 })
 
 describe('auth', () => {
   test('POST api/auth/register guarda un usuario', async () => {
     const token = await getToken()
-    const initialContent = await getContent(token)
+    const initialContent = await getUsers(token)
     const res = await api
       .post('/api/auth/register')
       .send(userToInsert)
       .expect(201)
       .expect('Content-Type', /json/)
-    const content = await getContent(token)
+    const content = await getUsers(token)
     const data = res.body.data
     expect(data).toHaveProperty('name')
     expect(data).toHaveProperty('email')
@@ -38,13 +38,13 @@ describe('auth', () => {
     const { trimEmailValue, trimNameValue, trimPassValue } = badUser
     const user = { '   email   ': trimEmailValue, '   name   ': trimNameValue, '   password   ': trimPassValue }
     const token = await getToken()
-    const initialContent = await getContent(token)
+    const initialContent = await getUsers(token)
     const res = await api
       .post('/api/auth/register')
       .send(user)
       .expect(201)
       .expect('Content-Type', /json/)
-    const content = await getContent(token)
+    const content = await getUsers(token)
     const data = res.body.data
     expect(data).toHaveProperty('name')
     expect(data).toHaveProperty('email')
@@ -448,18 +448,13 @@ describe('user', () => {
   test('DELETE /api/users Borra un usuario', async () => {
     const token1 = await getToken()
     const token2 = await getToken(0)
-    const initialContent = await getContent(token1)
+    const initialContent = await getUsers(token1)
     const res = await api.delete('/api/users')
       .auth(token1, { type: 'bearer' })
       .expect(200)
       .expect('Content-Type', /json/)
-    const content = await getContent(token2)
+    const content = await getUsers(token2)
     expect(content.length).toBe(initialContent.length - 1)
-    expect(res.body.data.message).toEqual('El usuario Raquel, Ha sido borrado con éxito.')
+    expect(res.body.data.message).toEqual('El usuario "Raquel", ha sido borrado con éxito.')
   })
-})
-
-afterAll(() => {
-  mongoose.connection.close()
-  server.close()
 })
