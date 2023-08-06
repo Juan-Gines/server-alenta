@@ -4,7 +4,7 @@ const { Schema } = mongoose
 // * Schema from PostModel
 
 const postSchema = new Schema({
-  name: { type: String, trim: true, require: true, minLength: 4, maxLength: 100 },
+  title: { type: String, trim: true, require: true, minLength: 4, maxLength: 100 },
   body: { type: String, trim: true, require: true, minLength: 4, maxLength: 1000 },
   user: { type: Schema.Types.ObjectId, trim: true, required: true, ref: 'User' }
 }, {

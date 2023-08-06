@@ -1,6 +1,6 @@
 import postService from '#Services/postService.js'
 
-// * Controller return all posts
+// * Controller return all users
 
 const getAllPosts = (req, res, next) => {
   postService
@@ -11,7 +11,7 @@ const getAllPosts = (req, res, next) => {
     })
 }
 
-// * Controller return one post
+// * Controller return one user
 
 const getOnePost = async (req, res, next) => {
   const { postId } = req.params
@@ -35,7 +35,7 @@ const createPost = async (req, res, next) => {
     })
 }
 
-// * Controller update data from post
+// * Controller update personal data user
 
 const updatePost = (req, res, next) => {
   const { body, userId } = req
@@ -47,7 +47,7 @@ const updatePost = (req, res, next) => {
     })
 }
 
-// * Delete post
+// * Delete user
 
 const deletePost = (req, res, next) => {
   const { userId } = req

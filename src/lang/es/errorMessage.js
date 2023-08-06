@@ -17,5 +17,4 @@ export const errorMessageES = Object.freeze({
   errEmptyPosts: 'No existen posts',
   errEmptyPost: 'Este post no existe',
   errIdErroneo: 'El id que intenta buscar es erróneo'
-
 })

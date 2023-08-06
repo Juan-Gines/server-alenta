@@ -1,13 +1,13 @@
 import mongoose from 'mongoose'
-import { api, getToken, getUser } from './helpers/user.js'
+import { api, badUser, getToken, getUser } from './helpers/user.js'
 import server from '../index.js'
-import { deleteFakePost, fakePostId, getIdFromPost, getPosts, newPost, postDBInit } from './helpers/posts.js'
+import { badPost, deleteFakePost, fakePostId, getIdFromPost, getPosts, newPost, postDBInit } from './helpers/posts.js'
 import { errorMessageES } from '#Lang/es/errorMessage.js'
 import PostModel from '#Models/post.js'
 
 // Errores de la api
 
-const { errEmptyPosts, errEmptyPost, errUnAuthorized, errIdErroneo } = errorMessageES
+const { errEmptyPosts, errEmptyPost, errUnAuthorized, errIdErroneo, errMinLength, errMaxLength, errTypeString } = errorMessageES
 
 beforeEach(async () => {
   await postDBInit()
@@ -44,7 +44,7 @@ describe('Posts', () => {
       .expect(200)
       .expect('Content-Type', /json/)
     const content = res.body.data
-    expect(content).toHaveProperty('name', 'El primer post del user 1')
+    expect(content).toHaveProperty('title', 'El primer post del user 1')
     expect(content).toHaveProperty('body', 'El body del primer post del user 1')
     expect(content).toHaveProperty('user')
   })
@@ -81,7 +81,7 @@ describe('Posts', () => {
     const finalPosts = await getPosts()
     const user = await getUser(token)
     const content = res.body.data
-    expect(content).toHaveProperty('name', 'Nuevo post')
+    expect(content).toHaveProperty('title', 'Nuevo post')
     expect(content).toHaveProperty('body', 'Body del nuevo post')
     expect(content).toHaveProperty('user')
     expect(content).toHaveProperty('id')
@@ -89,6 +89,44 @@ describe('Posts', () => {
     expect(content).toHaveProperty('updatedAt')
     expect(finalPosts.length).toBe(initialPosts.length + 1)
     expect(user.posts).toContain(content.id)
+  })
+  test('POST /api/posts post error minLength', async () => {
+    const token = await getToken(0)
+    const res = await api
+      .post('/api/posts')
+      .auth(token, { type: 'bearer' })
+      .send({ title: badPost.errMinText, body: badPost.errMinText })
+      .expect(400)
+      .expect('Content-Type', /json/)
+    const content = res.body.data.error.map(d => d.message)
+    expect(content[0]).toContain(errMinLength(4))
+    expect(content[1]).toContain(errMinLength(4))
+  })
+
+  test('POST /api/posts post error maxLength', async () => {
+    const token = await getToken(0)
+    const res = await api
+      .post('/api/posts')
+      .auth(token, { type: 'bearer' })
+      .send({ title: badPost.errLongText, body: badPost.errLongText })
+      .expect(400)
+      .expect('Content-Type', /json/)
+    const content = res.body.data.error.map(d => d.message)
+    expect(content[0]).toContain(errMaxLength(50))
+    expect(content[1]).toContain(errMaxLength(1000))
+  })
+
+  test('POST /api/posts post errores de typo', async () => {
+    const token = await getToken(0)
+    const res = await api
+      .post('/api/posts')
+      .auth(token, { type: 'bearer' })
+      .send({ title: badUser.type, body: badUser.type })
+      .expect(400)
+      .expect('Content-Type', /json/)
+    const content = res.body.data.error.map(d => d.message)
+    expect(content[0]).toContain(errTypeString)
+    expect(content[1]).toContain(errTypeString)
   })
 
   test('PATCH /api/posts/ updateamos un post', async () => {
@@ -101,12 +139,38 @@ describe('Posts', () => {
       .expect(200)
       .expect('Content-Type', /json/)
     const content = res.body.data
-    expect(content).toHaveProperty('name', 'Nuevo post')
+    expect(content).toHaveProperty('title', 'Nuevo post')
     expect(content).toHaveProperty('body', 'Body del nuevo post')
     expect(content).toHaveProperty('user')
     expect(content).toHaveProperty('id')
     expect(content).toHaveProperty('createdAt')
     expect(content).toHaveProperty('updatedAt')
+  })
+
+  test('PATCH /api/posts/ updateamos un post id errónea', async () => {
+    const token = await getToken(0)
+    const id = 'kjg'
+    const res = await api
+      .patch('/api/posts')
+      .auth(token, { type: 'bearer' })
+      .send({ ...newPost, id })
+      .expect(400)
+      .expect('Content-Type', /json/)
+    const content = res.body.data.error.map(d => d.message)
+    expect(content[0]).toEqual(errIdErroneo)
+  })
+
+  test('PATCH /api/posts/ updateamos un post id con error de tipo', async () => {
+    const token = await getToken(0)
+    const id = badUser.type
+    const res = await api
+      .patch('/api/posts')
+      .auth(token, { type: 'bearer' })
+      .send({ ...newPost, id })
+      .expect(400)
+      .expect('Content-Type', /json/)
+    const content = res.body.data.error.map(d => d.message)
+    expect(content[0]).toEqual(errTypeString)
   })
 
   test('PATCH /api/posts/ error updateamos un post de otro usuario', async () => {
@@ -187,6 +251,5 @@ describe('Posts', () => {
     expect(content).toEqual(errEmptyPost)
     expect(initialUser.posts.length).toBe(2)
     expect(afterUser.posts.length).toBe(1)
-    expect()
   })
 })

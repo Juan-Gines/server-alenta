@@ -109,7 +109,7 @@ const deleteOnePost = async (userId, postId) => {
     const postDeleted = await post.deleteOne()
     const pull = { $pull: { posts: postId } }
     await UserModel.findByIdAndUpdate(userId, pull, { new: true })
-    return { message: `El post "${postDeleted.name}", ha sido borrado con éxito.` }
+    return { message: `El post "${postDeleted.title}", ha sido borrado con éxito.` }
   } catch (error) {
     errObjectId(error)
     throw new CustomError(error?.status ?? 500, error?.message ?? error)
