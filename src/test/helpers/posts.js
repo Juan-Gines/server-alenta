@@ -9,16 +9,8 @@ const initialPosts = [
     body: 'El body del primer post del user 1'
   },
   {
-    title: 'El segundo post del user 1',
-    body: 'El body del segundo post del user 1'
-  },
-  {
     title: 'El primer post del user 2',
     body: 'El body del primer post del user 2'
-  },
-  {
-    title: 'El segundo post del user 2',
-    body: 'El body del segundo post del user 2'
   }
 ]
 
@@ -41,9 +33,7 @@ const postDBInit = async () => {
   const token1 = await getToken(0)
   const token2 = await getToken(1)
   await insertPost(token1, initialPosts[0])
-  await insertPost(token1, initialPosts[1])
-  await insertPost(token2, initialPosts[2])
-  await insertPost(token2, initialPosts[3])
+  await insertPost(token2, initialPosts[1])
 }
 
 // Inserta un post dentro de la DB

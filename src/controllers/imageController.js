@@ -1,34 +1,33 @@
-import postService from '#Services/postService.js'
+import imageService from '#Services/imageService.js'
 
-// * Controller return all users
+// * Controller return all images
 
-const getAllPosts = (req, res, next) => {
-  postService
-    .getAllPosts()
+const getAllImages = (req, res, next) => {
+  imageService
+    .getAllImages()
     .then((data) => res.json({ status: 'OK', data }))
     .catch(error => {
       next(error)
     })
 }
 
-// * Controller return one user
+// * Controller return one image
 
-const getOnePost = async (req, res, next) => {
+const getOneImage = (req, res, next) => {
   const { postId } = req.params
-  postService
-    .getOnePost(postId)
+  imageService
+    .getOneImage(postId)
     .then((data) => res.json({ status: 'OK', data }))
     .catch((error) => {
       next(error)
     })
 }
+// * Create Image
 
-// * Create Post
-
-const createPost = async (req, res, next) => {
+const createImage = (req, res, next) => {
   const { body, userId } = req
-  postService
-    .createOnePost(userId, body)
+  imageService
+    .createOneImage(userId, body)
     .then((data) => res.status(201).json({ status: 'OK', data }))
     .catch((error) => {
       next(error)
@@ -37,10 +36,10 @@ const createPost = async (req, res, next) => {
 
 // * Controller update personal data user
 
-const updatePost = (req, res, next) => {
+const updateImage = (req, res, next) => {
   const { body, userId } = req
-  postService
-    .updateOnePost(userId, body)
+  imageService
+    .updateOneImage(userId, body)
     .then((data) => res.json({ status: 'OK', data }))
     .catch((error) => {
       next(error)
@@ -49,11 +48,11 @@ const updatePost = (req, res, next) => {
 
 // * Delete user
 
-const deletePost = (req, res, next) => {
+const deleteImage = (req, res, next) => {
   const { userId } = req
-  const { postId } = req.params
-  postService
-    .deleteOnePost(userId, postId)
+  const { imageId } = req.params
+  imageService
+    .deleteOneImage(userId, imageId)
     .then((data) => res.json({ status: 'OK', data }))
     .catch((error) => {
       next(error)
@@ -61,9 +60,9 @@ const deletePost = (req, res, next) => {
 }
 
 export {
-  getAllPosts,
-  getOnePost,
-  createPost,
-  updatePost,
-  deletePost
+  getAllImages,
+  getOneImage,
+  createImage,
+  updateImage,
+  deleteImage
 }

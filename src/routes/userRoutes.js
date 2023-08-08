@@ -2,7 +2,7 @@ import express from 'express'
 import { getAllUsers, getOneUser, deleteOneUser, updatePersonalDataUser, updateImageUser } from '#Controllers/userController.js'
 import userUpdatePersonalDataDTO from '#DTO/user/updatePersonalData.js'
 import userExtractor from '#Auth/userExtractor.js'
-import userUpdateImageDTO from '#DTO/user/updateImage.js'
+import userUpdateImageDTO from '#DTO/user/updateAvatar.js'
 import trimBody from '#DTO/trimBody.js'
 
 const router = express.Router()

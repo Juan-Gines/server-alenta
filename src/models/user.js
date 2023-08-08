@@ -6,11 +6,12 @@ const { Schema } = mongoose
 const userSchema = new Schema({
   name: { type: String, trim: true, require: true, minLength: 4, maxLength: 25 },
   surname: { type: String, trim: true, minLength: 4, maxLength: 50 },
-  image: { type: String, trim: true, minLength: 4, maxLength: 50 },
+  avatar: { type: Schema.Types.ObjectId, trim: true, ref: 'Image' },
   email: { type: String, trim: true, lowercase: true, require: true, unique: true },
   role: { type: String, trim: true, enum: ['user', 'family', 'admin', 'friend'], default: 'user', require: true },
   password: { type: String, trim: true, require: true },
-  posts: [{ type: Schema.Types.ObjectId, ref: 'Post' }]
+  posts: [{ type: Schema.Types.ObjectId, trim: true, ref: 'Post' }],
+  images: [{ type: Schema.Types.ObjectId, trim: true, ref: 'Image' }]
 }, {
   timestamps: true
 })

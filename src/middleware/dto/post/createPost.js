@@ -1,21 +1,23 @@
 import { Type } from '@sinclair/typebox'
 import Ajv from 'ajv'
 import addErrors from 'ajv-errors'
-import { bodyDTOSchema, idDTOSchema, titleDTOSchema } from './types.js'
+import { bodyDTOSchema, extractDTOSchema, imagesDTOSquema, posterDTOSquema, titleDTOSchema } from './typesPost.js'
 import { CustomError } from '#Errors/CustomError.js'
 import { errorMessageES } from '#Lang/es/errorMessage.js'
 
 // ! Error messages
 
-const { errFormatObject, errRequired } = errorMessageES
+const { errRequired, errFormatObject } = errorMessageES
 
 // * Validation user personal data
 
 const UpdateDataDTOSchema = Type.Object(
   {
     title: titleDTOSchema,
+    extract: extractDTOSchema,
     body: bodyDTOSchema,
-    id: idDTOSchema
+    images: imagesDTOSquema,
+    poster: posterDTOSquema
   },
   {
     additionalProperties: false,
@@ -24,10 +26,11 @@ const UpdateDataDTOSchema = Type.Object(
       required: {
         title: errRequired('título'),
         body: errRequired('cuerpo'),
-        id: errRequired('id')
+        extract: errRequired('extracto')
       }
     }
   }
+
 )
 
 const ajv = new Ajv({ allErrors: true })
@@ -37,7 +40,7 @@ addErrors(ajv)
 
 const validateSchema = ajv.compile(UpdateDataDTOSchema)
 
-const updatePostDTO = (req, res, next) => {
+const createPostDTO = (req, res, next) => {
   const isDTOValid = validateSchema(req.body)
 
   if (!isDTOValid) {
@@ -58,4 +61,4 @@ const updatePostDTO = (req, res, next) => {
   next()
 }
 
-export default updatePostDTO
+export default createPostDTO

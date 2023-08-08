@@ -3,43 +3,44 @@ import { CustomError } from '#Errors/CustomError.js'
 import { errorMessageES } from '#Lang/es/errorMessage.js'
 import UserModel from '#Models/user.js'
 import errObjectId from '#Utils/errObjectId.js'
+import ImageModel from '#Models/image.js'
 
-// ! Error messages
+// * Error messages
 
-const { errEmptyPosts, errEmptyPost, errUnAuthorized } = errorMessageES
+const { errEmptyImages, errEmptyImage, errUnAuthorized } = errorMessageES
 
-// * Return all posts from DB
+// * Return all images from DB
 
-const getAllPosts = () => {
-  return PostModel.find({})
+const getAllImages = () => {
+  return ImageModel.find({})
     .populate('user', {
       name: 1,
       email: 1
     })
-    .then(posts => {
-      if (!posts?.length) {
-        throw new CustomError(404, errEmptyPosts)
+    .then(images => {
+      if (!images?.length) {
+        throw new CustomError(404, errEmptyImages)
       }
-      return posts
+      return images
     })
     .catch(error => {
       throw new CustomError(error?.status ?? 500, error?.message ?? error)
     })
 }
 
-// * Return one post from DB
+// * Return one image from DB
 
-const getOnePost = (postId) => {
-  return PostModel.findById(postId)
+const getOneImage = (imageId) => {
+  return ImageModel.findById(imageId)
     .populate('user', {
       name: 1,
       email: 1
     })
-    .then(post => {
-      if (!post) {
-        throw new CustomError(404, errEmptyPost)
+    .then(image => {
+      if (!image) {
+        throw new CustomError(404, errEmptyImage)
       }
-      return post
+      return image
     })
     .catch(error => {
       errObjectId(error)
@@ -47,28 +48,35 @@ const getOnePost = (postId) => {
     })
 }
 
-// * Create one Post and return this post
+// * Create one Image and return this image
 
-const createOnePost = async (userId, post) => {
+const createOneImage = async (userId, image) => {
   try {
     const user = await UserModel.findById(userId)
     const postToInsert = {
-      ...post,
+      ...image,
       user: userId
     }
-    const newPost = new PostModel(postToInsert)
-    await newPost.save()
-    user.posts = user.posts.concat(newPost._id)
+    const newImage = new ImageModel(postToInsert)
+    await newImage.save()
+    if (image?.post) {
+      const post = await PostModel.findById(image.post)
+      post.images.concat(newImage._id)
+      await post.save()
+      user.images.concat(newImage._id)
+    } else {
+      user.avatar = newImage._id
+    }
     await user.save()
-    return newPost
+    return newImage
   } catch (error) {
     throw new CustomError(error?.status ?? 500, error?.message ?? error)
   }
 }
 
-// * Update one post and user and return this posts from DB
+// * Update one user and return this users from DB
 
-const updateOnePost = async (userId, changes) => {
+const updateOneImage = async (userId, changes) => {
   const { id, ...infoToUpdate } = changes
   try {
     const user = await UserModel.findById(userId)
@@ -83,7 +91,7 @@ const updateOnePost = async (userId, changes) => {
     if (!postForUpdate) {
       user.posts = user.posts.filter(p => !p.equals(id))
       await user.save()
-      throw new CustomError(404, errEmptyPost)
+      throw new CustomError(404, errEmptyImage)
     }
     return postForUpdate
   } catch (error) {
@@ -92,16 +100,16 @@ const updateOnePost = async (userId, changes) => {
   }
 }
 
-// * Delete one post from DB
+// * Delete one user from DB
 
-const deleteOnePost = async (userId, postId) => {
+const deleteOneImage = async (userId, postId) => {
   try {
     const post = await PostModel.findById(postId)
     if (!post) {
       const user = await UserModel.findById(userId)
       user.posts = user.posts.filter(p => !p.equals(postId))
       await user.save()
-      throw new CustomError(404, errEmptyPost)
+      throw new CustomError(404, errEmptyImage)
     }
     if (!post.user.equals(userId)) {
       throw new CustomError(401, errUnAuthorized)
@@ -117,9 +125,9 @@ const deleteOnePost = async (userId, postId) => {
 }
 
 export default {
-  getAllPosts,
-  getOnePost,
-  createOnePost,
-  updateOnePost,
-  deleteOnePost
+  getAllImages,
+  getOneImage,
+  createOneImage,
+  updateOneImage,
+  deleteOneImage
 }

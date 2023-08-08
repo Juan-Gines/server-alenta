@@ -4,7 +4,10 @@ const { Schema } = mongoose
 // * Schema from PostModel
 
 const postSchema = new Schema({
-  title: { type: String, trim: true, require: true, minLength: 4, maxLength: 100 },
+  title: { type: String, trim: true, require: true, minLength: 4, maxLength: 50 },
+  extract: { type: String, trim: true, require: true, minLength: 4, maxLength: 100 },
+  poster: { type: Schema.Types.ObjectId, trim: true, ref: 'Image' },
+  images: [{ type: Schema.Types.ObjectId, trim: true, ref: 'Image' }],
   body: { type: String, trim: true, require: true, minLength: 4, maxLength: 1000 },
   user: { type: Schema.Types.ObjectId, trim: true, required: true, ref: 'User' }
 }, {

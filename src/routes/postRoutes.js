@@ -2,8 +2,9 @@ import express from 'express'
 import userExtractor from '#Auth/userExtractor.js'
 import trimBody from '#DTO/trimBody.js'
 import { createPost, deletePost, getAllPosts, getOnePost, updatePost } from '#Controllers/postController.js'
-import createPostDTO from '#DTO/posts/createPost.js'
-import updatePostDTO from '#DTO/posts/updatePost.js'
+import createPostDTO from '#DTO/post/createPost.js'
+import updatePostDTO from '#DTO/post/updatePost.js'
+import imagesPost from '../middleware/post/imagesPost.js'
 
 const router = express.Router()
 
@@ -15,7 +16,7 @@ router
 
   .get('/:postId', getOnePost)
 
-  .post('/', trimBody, userExtractor, createPostDTO, createPost)
+  .post('/', trimBody, userExtractor, createPostDTO, imagesPost, createPost)
 
   .patch('/', trimBody, userExtractor, updatePostDTO, updatePost)
 

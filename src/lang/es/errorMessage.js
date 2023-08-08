@@ -16,5 +16,13 @@ export const errorMessageES = Object.freeze({
   errNewPassEqualToOld: 'El nuevo password no puede ser igual al antiguo.',
   errEmptyPosts: 'No existen posts',
   errEmptyPost: 'Este post no existe',
-  errIdErroneo: 'El id que intenta buscar es erróneo'
+  errEmptyImages: 'No existen imagenes',
+  errEmptyImage: 'Esta imagen no existe',
+  errIdErroneo: 'El id que intenta buscar es erróneo',
+  errMaxImages: 'No puedes poner más imágenes',
+  errMinimum: (min) => `El número no puede ser menor a ${min}`,
+  errMaximum: (max) => `El número no puede ser menor a ${max}`,
+  errTypeNumber: 'El tipo debe ser un número.',
+  errTypeObject: 'El tipo debe ser un objeto.',
+  errTypeArray: 'El tipo debe ser un array.'
 })

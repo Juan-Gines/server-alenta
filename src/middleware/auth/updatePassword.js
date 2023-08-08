@@ -1,7 +1,7 @@
 import { Type } from '@sinclair/typebox'
 import Ajv from 'ajv'
 import addErrors from 'ajv-errors'
-import { passwordDTOSchema } from '../dto/user/types.js'
+import { passwordDTOSchema } from '../dto/user/typesUser.js'
 import { CustomError } from '#Errors/CustomError.js'
 import { errorMessageES } from '#Lang/es/errorMessage.js'
 

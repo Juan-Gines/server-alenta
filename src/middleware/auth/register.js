@@ -2,7 +2,7 @@ import { Type } from '@sinclair/typebox'
 import Ajv from 'ajv'
 import addFormats from 'ajv-formats'
 import addErrors from 'ajv-errors'
-import { emailDTOSchema, nameDTOSchema, passwordDTOSchema } from '#DTO/user/types.js'
+import { emailDTOSchema, nameDTOSchema, passwordDTOSchema } from '#DTO/user/typesUser.js'
 import { CustomError } from '#Errors/CustomError.js'
 import { errorMessageES } from '#Lang/es/errorMessage.js'
 

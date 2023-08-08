@@ -1,26 +1,31 @@
 import { Type } from '@sinclair/typebox'
 import Ajv from 'ajv'
 import addErrors from 'ajv-errors'
-import { imageDTOSchema } from './types.js'
+import { bodyDTOSchema, titleDTOSchema } from './typesPost.js'
 import { CustomError } from '#Errors/CustomError.js'
 import { errorMessageES } from '#Lang/es/errorMessage.js'
+import { idDTOSchema } from '#DTO/typesGeneral.js'
 
 // ! Error messages
 
 const { errFormatObject, errRequired } = errorMessageES
 
-// * Validation user image data
+// * Validation user personal data
 
 const UpdateDataDTOSchema = Type.Object(
   {
-    image: imageDTOSchema
+    title: titleDTOSchema,
+    body: bodyDTOSchema,
+    id: idDTOSchema
   },
   {
     additionalProperties: false,
     errorMessage: {
       additionalProperties: errFormatObject,
       required: {
-        image: errRequired('imagen')
+        title: errRequired('título'),
+        body: errRequired('cuerpo'),
+        id: errRequired('id')
       }
     }
   }
@@ -33,7 +38,7 @@ addErrors(ajv)
 
 const validateSchema = ajv.compile(UpdateDataDTOSchema)
 
-const userUpdateImageDTO = (req, res, next) => {
+const updatePostDTO = (req, res, next) => {
   const isDTOValid = validateSchema(req.body)
 
   if (!isDTOValid) {
@@ -54,4 +59,4 @@ const userUpdateImageDTO = (req, res, next) => {
   next()
 }
 
-export default userUpdateImageDTO
+export default updatePostDTO

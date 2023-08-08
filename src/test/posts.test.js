@@ -24,7 +24,7 @@ describe('Posts', () => {
       .get('/api/posts')
       .expect(200)
       .expect('Content-Type', /json/)
-    expect(res.body.data.length).toBe(4)
+    expect(res.body.data.length).toBe(2)
   })
 
   test('GET /api/posts error no existen post', async () => {
@@ -131,7 +131,7 @@ describe('Posts', () => {
 
   test('PATCH /api/posts/ updateamos un post', async () => {
     const token = await getToken(0)
-    const id = await getIdFromPost(1)
+    const id = await getIdFromPost(0)
     const res = await api
       .patch('/api/posts')
       .auth(token, { type: 'bearer' })
@@ -175,7 +175,7 @@ describe('Posts', () => {
 
   test('PATCH /api/posts/ error updateamos un post de otro usuario', async () => {
     const token = await getToken(0)
-    const id = await getIdFromPost(3)
+    const id = await getIdFromPost(1)
     const res = await api
       .patch('/api/posts')
       .auth(token, { type: 'bearer' })
@@ -188,7 +188,7 @@ describe('Posts', () => {
 
   test('PATCH /api/posts/ error updateamos un post inexistente y nos aseguramos que se borra la relación con el usuario', async () => {
     const token = await getToken(0)
-    const id = await getIdFromPost(1)
+    const id = await getIdFromPost(0)
     const initialUser = await getUser(token)
     await deleteFakePost(id)
     const res = await api
@@ -208,25 +208,25 @@ describe('Posts', () => {
     const content2 = res2.body.data.error
     expect(content).toEqual(errEmptyPost)
     expect(content2).toEqual(errUnAuthorized)
-    expect(initialUser.posts.length).toBe(2)
-    expect(afterUser.posts.length).toBe(1)
+    expect(initialUser.posts.length).toBe(1)
+    expect(afterUser.posts.length).toBe(0)
   })
 
   test('DELETE /api/posts/:postId borramos un post', async () => {
     const token = await getToken(0)
-    const id = await getIdFromPost(1)
+    const id = await getIdFromPost(0)
     const res = await api
       .delete(`/api/posts/${id}`)
       .auth(token, { type: 'bearer' })
       .expect(200)
       .expect('Content-Type', /json/)
     const content = res.body.data.message
-    expect(content).toEqual('El post "El segundo post del user 1", ha sido borrado con éxito.')
+    expect(content).toEqual('El post "El primer post del user 1", ha sido borrado con éxito.')
   })
 
   test('DELETE /api/posts/:postId error borramos un post de otro usuario', async () => {
     const token = await getToken(0)
-    const id = await getIdFromPost(2)
+    const id = await getIdFromPost(1)
     const res = await api
       .delete(`/api/posts/${id}`)
       .auth(token, { type: 'bearer' })
@@ -238,7 +238,7 @@ describe('Posts', () => {
 
   test('DELETE /api/posts/:postId error borramos un post inexistente', async () => {
     const token = await getToken(0)
-    const id = await getIdFromPost(1)
+    const id = await getIdFromPost(0)
     const initialUser = await getUser(token)
     await deleteFakePost(id)
     const res = await api
@@ -249,7 +249,7 @@ describe('Posts', () => {
     const afterUser = await getUser(token)
     const content = res.body.data.error
     expect(content).toEqual(errEmptyPost)
-    expect(initialUser.posts.length).toBe(2)
-    expect(afterUser.posts.length).toBe(1)
+    expect(initialUser.posts.length).toBe(1)
+    expect(afterUser.posts.length).toBe(0)
   })
 })

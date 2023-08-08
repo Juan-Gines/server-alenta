@@ -13,7 +13,7 @@ const getAllPosts = (req, res, next) => {
 
 // * Controller return one post
 
-const getOnePost = async (req, res, next) => {
+const getOnePost = (req, res, next) => {
   const { postId } = req.params
   postService
     .getOnePost(postId)
@@ -25,11 +25,10 @@ const getOnePost = async (req, res, next) => {
 
 // * Create Post
 
-const createPost = async (req, res, next) => {
+const createPost = (req, res, next) => {
   const { body, userId } = req
-  postService
-    .createOnePost(userId, body)
-    .then((data) => res.status(201).json({ status: 'OK', data }))
+  postService.createOnePost(userId, body)
+    .then((data) => res.json({ status: 'OK', data }))
     .catch((error) => {
       next(error)
     })

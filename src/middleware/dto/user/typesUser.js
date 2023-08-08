@@ -1,5 +1,6 @@
 import { Type } from '@sinclair/typebox'
 import { errorMessageES } from '#Lang/es/errorMessage.js'
+import { stringDTOSchema } from '#DTO/typesGeneral.js'
 
 // ! Error messages
 
@@ -7,33 +8,9 @@ const { errTypeString, errMinLength, errMaxLength, errRoleEnum, errFormatEmail, 
 
 // ? Error types validation
 
-export const nameDTOSchema = Type.String({
-  minLength: 4,
-  maxLength: 25,
-  errorMessage: {
-    type: errTypeString,
-    minLength: errMinLength(4),
-    maxLength: errMaxLength(25)
-  }
-})
+export const nameDTOSchema = stringDTOSchema(4, 25)
 
-export const surnameDTOSchema = Type.String({
-  minLength: 4,
-  maxLength: 50,
-  errorMessage: {
-    type: errTypeString,
-    minLength: errMinLength(4),
-    maxLength: errMaxLength(50)
-  }
-})
-
-export const imageDTOSchema = Type.String({
-  minLength: 4,
-  errorMessage: {
-    type: errTypeString,
-    minLength: errMinLength(4)
-  }
-})
+export const surnameDTOSchema = stringDTOSchema(4, 50)
 
 export const roleDTOSchema = Type.String({
   enum: ['user', 'family', 'admin', 'friend'],
