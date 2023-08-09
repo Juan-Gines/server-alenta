@@ -34,18 +34,6 @@ const updatePersonalDataUser = (req, res, next) => {
     })
 }
 
-// * Controller update image user
-
-const updateImageUser = (req, res, next) => {
-  const { body, userId } = req
-  userService
-    .updateOneUser(userId, body)
-    .then((updatedUser) => res.json({ status: 'OK', data: updatedUser }))
-    .catch((error) => {
-      next(error)
-    })
-}
-
 // * Delete user
 
 const deleteOneUser = (req, res, next) => {
@@ -61,6 +49,5 @@ export {
   getAllUsers,
   getOneUser,
   updatePersonalDataUser,
-  updateImageUser,
   deleteOneUser
 }

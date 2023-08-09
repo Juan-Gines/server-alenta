@@ -7,7 +7,7 @@ import { bytesDTOSquema, imageNameDTOSchema, pathDTOSquema } from '#DTO/image/ty
 
 const { errTypeObject, errTypeArray, errMaxImages } = errorMessageES
 
-// ? Error types validation
+// ? VALIDACIONES PARA POST MODEL
 
 export const titleDTOSchema = stringDTOSchema(4, 50)
 

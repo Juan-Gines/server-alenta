@@ -24,5 +24,6 @@ export const errorMessageES = Object.freeze({
   errMaximum: (max) => `El número no puede ser menor a ${max}`,
   errTypeNumber: 'El tipo debe ser un número.',
   errTypeObject: 'El tipo debe ser un objeto.',
-  errTypeArray: 'El tipo debe ser un array.'
+  errTypeArray: 'El tipo debe ser un array.',
+  errTypeBoolean: 'El tipo debe ser un boleano.'
 })

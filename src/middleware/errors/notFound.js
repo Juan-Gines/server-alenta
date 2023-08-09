@@ -1,4 +1,4 @@
-import { errorLog } from '../../lib/errorlog.js'
+import { errorLog } from '../../utils/errorlog.js'
 
 // * Not found end point
 

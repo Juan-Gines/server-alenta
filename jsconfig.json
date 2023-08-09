@@ -14,7 +14,8 @@
             "#Models/*": ["./src/models/*"],
             "#Errors/*": ["./src/middleware/errors/*"],
             "#Lang/*": ["./src/lang/*"],
-            "#Utils/*": ["./src/utils/*"]
+            "#Utils/*": ["./src/utils/*"],
+            "#Middleware/*": ["./src/middleware/*"]
         }
     }
 }

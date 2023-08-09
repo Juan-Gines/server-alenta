@@ -59,13 +59,11 @@ const createOneImage = async (userId, image) => {
     }
     const newImage = new ImageModel(postToInsert)
     await newImage.save()
-    if (image?.post) {
-      const post = await PostModel.findById(image.post)
-      post.images.concat(newImage._id)
-      await post.save()
-      user.images.concat(newImage._id)
-    } else {
+    if (image.avatar) {
+      if (user.avatar) await ImageModel.findByIdAndDelete(user.avatar)
       user.avatar = newImage._id
+    } else {
+      user.images.push(newImage._id)
     }
     await user.save()
     return newImage

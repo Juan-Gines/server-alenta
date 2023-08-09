@@ -1,9 +1,9 @@
 import express from 'express'
-import { getAllUsers, getOneUser, deleteOneUser, updatePersonalDataUser, updateImageUser } from '#Controllers/userController.js'
+import { getAllUsers, getOneUser, deleteOneUser, updatePersonalDataUser } from '#Controllers/userController.js'
 import userUpdatePersonalDataDTO from '#DTO/user/updatePersonalData.js'
 import userExtractor from '#Auth/userExtractor.js'
-import userUpdateImageDTO from '#DTO/user/updateAvatar.js'
 import trimBody from '#DTO/trimBody.js'
+import avatarUser from '#Middleware/user/avatarUser.js'
 
 const router = express.Router()
 
@@ -15,9 +15,7 @@ router
 
   .get('/profile', userExtractor, getOneUser)
 
-  .patch('/personaldata', trimBody, userExtractor, userUpdatePersonalDataDTO, updatePersonalDataUser)
-
-  .patch('/image', trimBody, userExtractor, userUpdateImageDTO, updateImageUser)
+  .patch('/personaldata', trimBody, userExtractor, userUpdatePersonalDataDTO, avatarUser, updatePersonalDataUser)
 
   .delete('/', userExtractor, deleteOneUser)
 

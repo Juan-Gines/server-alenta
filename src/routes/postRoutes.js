@@ -4,7 +4,7 @@ import trimBody from '#DTO/trimBody.js'
 import { createPost, deletePost, getAllPosts, getOnePost, updatePost } from '#Controllers/postController.js'
 import createPostDTO from '#DTO/post/createPost.js'
 import updatePostDTO from '#DTO/post/updatePost.js'
-import imagesPost from '../middleware/post/imagesPost.js'
+import imagesPost from '#Middleware/post/imagesPost.js'
 
 const router = express.Router()
 
