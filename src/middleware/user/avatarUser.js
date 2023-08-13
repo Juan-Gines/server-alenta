@@ -5,6 +5,7 @@ const avatarUser = async (req, res, next) => {
   const { avatar } = req.body
 
   if (avatar) {
+    avatar.avatar = true
     req.body.avatar = await createAndGetIdFromPoster(userId, avatar, next)
   }
   next()

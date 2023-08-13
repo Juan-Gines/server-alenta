@@ -85,6 +85,7 @@ const updateOnePost = async (userId, changes) => {
       await user.save()
       throw new CustomError(404, errEmptyPost)
     }
+
     return postForUpdate
   } catch (error) {
     errObjectId(error)

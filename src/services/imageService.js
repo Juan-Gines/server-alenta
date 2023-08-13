@@ -36,6 +36,7 @@ const getOneImage = (imageId) => {
       name: 1,
       email: 1
     })
+    .exec()
     .then(image => {
       if (!image) {
         throw new CustomError(404, errEmptyImage)
@@ -53,11 +54,11 @@ const getOneImage = (imageId) => {
 const createOneImage = async (userId, image) => {
   try {
     const user = await UserModel.findById(userId)
-    const postToInsert = {
+    const imageToInsert = {
       ...image,
       user: userId
     }
-    const newImage = new ImageModel(postToInsert)
+    const newImage = new ImageModel(imageToInsert)
     await newImage.save()
     if (image.avatar) {
       if (user.avatar) await ImageModel.findByIdAndDelete(user.avatar)

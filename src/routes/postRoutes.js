@@ -18,7 +18,7 @@ router
 
   .post('/', trimBody, userExtractor, createPostDTO, imagesPost, createPost)
 
-  .patch('/', trimBody, userExtractor, updatePostDTO, updatePost)
+  .patch('/', trimBody, userExtractor, updatePostDTO, imagesPost, updatePost)
 
   .delete('/:postId', userExtractor, deletePost)
 

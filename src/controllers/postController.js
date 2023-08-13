@@ -28,7 +28,7 @@ const getOnePost = (req, res, next) => {
 const createPost = (req, res, next) => {
   const { body, userId } = req
   postService.createOnePost(userId, body)
-    .then((data) => res.json({ status: 'OK', data }))
+    .then((data) => res.status(201).json({ status: 'OK', data }))
     .catch((error) => {
       next(error)
     })

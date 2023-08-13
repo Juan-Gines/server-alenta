@@ -89,10 +89,11 @@ describe('auth', () => {
     const res = await api
       .post('/api/auth/register')
       .send(user)
-      .expect(400)
+      .expect(201)
       .expect('Content-Type', /json/)
-    const content = res.body.data.error.map(d => d.message)
-    expect(content).toContain(error.errFormatObject)
+    const content = res.body.data
+    expect(content).toHaveProperty('name', 'manuel')
+    expect(content).not.toHaveProperty('hola')
   })
 
   test('POST api/auth/register body parámetros requeridos', async () => {
@@ -173,14 +174,14 @@ describe('auth', () => {
   })
 
   test('POST api/auth/login body con parámetros de más', async () => {
-    const user = userToInsert
+    const user = { email: 'raquel@test.com', password: 'Test1234', name: 'Raquel', hola: 'hola' }
     const res = await api
       .post('/api/auth/login')
       .send(user)
-      .expect(400)
+      .expect(200)
       .expect('Content-Type', /json/)
-    const content = res.body.data.error.map(d => d.message)
-    expect(content).toContain(error.errFormatObject)
+    const content = res.body.data
+    expect(content).toHaveProperty('token')
   })
 
   test('PATCH api/auth/password evalua el viejo password y lo cambia', async () => {
@@ -239,10 +240,9 @@ describe('auth', () => {
       .patch('/api/auth/password')
       .auth(token, { type: 'bearer' })
       .send(newPass)
-      .expect(400)
+      .expect(200)
       .expect('Content-Type', /json/)
-    const content = res.body.data.error.map(d => d.message)
-    expect(content).toContain(error.errFormatObject)
+    expect(res.body.data.message).toEqual('El password de Raquel se cambió correctamente.')
   })
 })
 
@@ -327,10 +327,8 @@ describe('user', () => {
       .expect(200)
       .expect('Content-Type', /json/)
     const content = res.body.data
-    expect(content).toHaveProperty('name')
-    expect(content).toHaveProperty('surname')
-    expect(content.name).toEqual('Fulano')
-    expect(content.surname).toEqual('De Tal')
+    expect(content).toHaveProperty('name', 'Fulano')
+    expect(content).toHaveProperty('surname', 'De Tal')
   })
 
   test('PATCH /api/users/personaldata error requeridos', async () => {
@@ -378,71 +376,67 @@ describe('user', () => {
     expect(content).toContain(error.errTypeString)
   })
 
-  test('PATCH /api/users/personaldata body con parámetros de más', async () => {
+  test('PATCH /api/users/personaldata updatea la info con imagen', async () => {
     const token = await getToken()
     const res = await api.patch('/api/users/personaldata')
       .auth(token, { type: 'bearer' })
-      .send({ name: 'Fulano', surname: 'De Tal', hola: 'fjksdf' })
-      .expect(400)
-      .expect('Content-Type', /json/)
-    const content = res.body.data.error.map(d => d.message)
-    expect(content).toContain(error.errFormatObject)
-  })
-
-  test('PATCH /api/users/image updatea la imagen', async () => {
-    const token = await getToken()
-    const res = await api.patch('/api/users/image')
-      .auth(token, { type: 'bearer' })
-      .send({ image: 'imagen.jpg' })
+      .send({ name: 'Fulano', surname: 'De Tal', avatar: { imageName: 'imagen.jpg', path: '/src/image/avatar', bytes: 550, avatar: true } })
       .expect(200)
       .expect('Content-Type', /json/)
     const content = res.body.data
-    expect(content).toHaveProperty('image')
-    expect(content.image).toEqual('imagen.jpg')
+    const imagen = await api.get(`/api/images/${content.avatar}`)
+    expect(content).toHaveProperty('avatar')
+    expect(imagen.body.data).toHaveProperty('path')
   })
 
-  test('PATCH /api/users/image error requeridos', async () => {
+  test('PATCH /api/users/personaldata error requeridos deontro de avatar', async () => {
     const token = await getToken()
-    const res = await api.patch('/api/users/image')
+    const res = await api.patch('/api/users/personaldata')
       .auth(token, { type: 'bearer' })
-      .send({ })
+      .send({ name: 'Fulano', surname: 'De Tal', avatar: { } })
       .expect(400)
       .expect('Content-Type', /json/)
-    const content = res.body.data.error.map(d => d.message)
-    expect(content).toContain(error.errRequired('imagen'))
+    const content = res.body.data.error.map(e => e.message)
+    expect(content).toContain(error.errRequired('imageName'))
+    expect(content).toContain(error.errRequired('path'))
+    expect(content).toContain(error.errRequired('bytes'))
   })
 
-  test('PATCH /api/users/image error imagen min', async () => {
+  test('PATCH /api/users/personaldata error avatar props min', async () => {
     const token = await getToken()
-    const res = await api.patch('/api/users/image')
+    const res = await api.patch('/api/users/personaldata')
       .auth(token, { type: 'bearer' })
-      .send({ image: badUser.minLength })
+      .send({ name: 'Fulano', surname: 'De Tal', avatar: { imageName: 'ima', path: '/sr', bytes: 5, avatar: true } })
       .expect(400)
       .expect('Content-Type', /json/)
     const content = res.body.data.error.map(d => d.message)
     expect(content).toContain(error.errMinLength(4))
+    expect(content).toContain(error.errMinimum(10))
   })
 
-  test('PATCH /api/users/image error apellidos de tipo', async () => {
+  test('PATCH /api/users/personaldata error avatar tipo', async () => {
     const token = await getToken()
-    const res = await api.patch('/api/users/image')
+    const res = await api.patch('/api/users/personaldata')
       .auth(token, { type: 'bearer' })
-      .send({ image: badUser.type })
+      .send({ name: 'Fulano', surname: 'De Tal', avatar: 'hola' })
       .expect(400)
       .expect('Content-Type', /json/)
-    const content = res.body.data.error.map(d => d.message)
-    expect(content).toContain(error.errTypeString)
+    const content = res.body.data.error.map(e => e.message)
+    expect(content).toContain(error.errTypeObject)
   })
 
-  test('PATCH /api/users/image body con parámetros de más', async () => {
+  test('PATCH /api/users/personaldata avatar con parámetros de más', async () => {
     const token = await getToken()
-    const res = await api.patch('/api/users/image')
+    const res = await api.patch('/api/users/personaldata')
       .auth(token, { type: 'bearer' })
-      .send({ image: 'imagen.jpg', surname: 'De Tal', hola: 'fjksdf' })
-      .expect(400)
+      .send({ name: 'Fulano', surname: 'De Tal', hola: 'fjksdf', avatar: { imageName: 'imagen.jpg', path: '/src/image/avatar', bytes: 550, avatar: true, hola: 'hola' } })
+      .expect(200)
       .expect('Content-Type', /json/)
-    const content = res.body.data.error.map(d => d.message)
-    expect(content).toContain(error.errFormatObject)
+    const content = res.body.data
+    expect(content).toHaveProperty('name', 'Fulano')
+    expect(content).toHaveProperty('surname', 'De Tal')
+    expect(content).toHaveProperty('avatar')
+    expect(content).not.toHaveProperty('hola')
   })
 
   test('DELETE /api/users Borra un usuario', async () => {

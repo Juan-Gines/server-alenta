@@ -1,11 +1,11 @@
 import { Type } from '@sinclair/typebox'
 import { errorMessageES } from '#Lang/es/errorMessage.js'
-import { numberDTOSchema, stringDTOSchema } from '#DTO/typesGeneral.js'
-import { bytesDTOSquema, imageNameDTOSchema, pathDTOSquema } from '#DTO/image/typesImage.js'
+import { stringDTOSchema } from '#DTO/typesGeneral.js'
+import { imageDTOSchema } from '#DTO/image/typesImage.js'
 
 // ! Error messages
 
-const { errTypeObject, errTypeArray, errMaxImages } = errorMessageES
+const { errTypeArray, errMaxImages } = errorMessageES
 
 // ? VALIDACIONES PARA POST MODEL
 
@@ -16,16 +16,7 @@ export const extractDTOSchema = stringDTOSchema(4, 100)
 export const bodyDTOSchema = stringDTOSchema(4, 1000)
 
 export const imagesDTOSquema = Type.Optional(Type.Array(
-  Type.Object({
-    imageName: imageNameDTOSchema,
-    path: pathDTOSquema,
-    bytes: bytesDTOSquema
-  },
-  {
-    errorMessage: {
-      type: errTypeObject
-    }
-  }),
+  imageDTOSchema,
   {
     maxItems: 10,
     errorMessage: {
@@ -35,13 +26,4 @@ export const imagesDTOSquema = Type.Optional(Type.Array(
   }
 ))
 
-export const posterDTOSquema = Type.Optional(Type.Object({
-  imageName: stringDTOSchema(4, 50),
-  path: stringDTOSchema(4, 50),
-  bytes: numberDTOSchema(10, 2048)
-},
-{
-  errorMessage: {
-    type: errTypeObject
-  }
-}))
+export const posterDTOSquema = Type.Optional(imageDTOSchema)

@@ -7,7 +7,7 @@ import { errorMessageES } from '#Lang/es/errorMessage.js'
 
 // ! Error messages
 
-const { errFormatObject, errRequired } = errorMessageES
+const { errRequired } = errorMessageES
 
 // * Validation user change password
 
@@ -17,9 +17,7 @@ const UpdateDataDTOSchema = Type.Object(
     newPassword: passwordDTOSchema
   },
   {
-    additionalProperties: false,
     errorMessage: {
-      additionalProperties: errFormatObject,
       required: {
         oldPassword: errRequired('antiguo password'),
         newPassword: errRequired('nuevo password')

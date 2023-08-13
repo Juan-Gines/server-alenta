@@ -1,3 +1,4 @@
+import ImageModel from '#Models/image.js'
 import PostModel from '#Models/post.js'
 import { api, getToken, userDBInit } from './user.js'
 
@@ -5,12 +6,14 @@ import { api, getToken, userDBInit } from './user.js'
 
 const initialPosts = [
   {
-    title: 'El primer post del user 1',
-    body: 'El body del primer post del user 1'
+    title: 'El post del user 1',
+    body: 'El body del post del user 1',
+    extract: 'Extracto del post del user 1'
   },
   {
-    title: 'El primer post del user 2',
-    body: 'El body del primer post del user 2'
+    title: 'El post del user 2',
+    body: 'El body del post del user 2',
+    extract: 'Extracto del post del user 2'
   }
 ]
 
@@ -18,7 +21,8 @@ const initialPosts = [
 
 const newPost = {
   title: 'Nuevo post',
-  body: 'Body del nuevo post'
+  body: 'Body del nuevo post',
+  extract: 'Extracto del nuevo post'
 }
 
 // Id de un post inexistente
@@ -30,6 +34,7 @@ const fakePostId = '64cf7548a22457137656ee5d'
 const postDBInit = async () => {
   await userDBInit()
   await PostModel.deleteMany({})
+  await ImageModel.deleteMany({})
   const token1 = await getToken(0)
   const token2 = await getToken(1)
   await insertPost(token1, initialPosts[0])
@@ -49,8 +54,8 @@ const insertPost = async (token, post) => {
 
 const getIdFromPost = async (post = 0) => {
   const res = await api.get('/api/posts')
-  const content = res.body.data
-  return content[post].id
+  const content = res.body.data[post]
+  return content.id
 }
 
 // Recuperamos todos los posts de la DB

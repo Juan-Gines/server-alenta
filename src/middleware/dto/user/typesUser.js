@@ -1,11 +1,11 @@
 import { Type } from '@sinclair/typebox'
 import { errorMessageES } from '#Lang/es/errorMessage.js'
 import { stringDTOSchema } from '#DTO/typesGeneral.js'
-import { avatarBoolDTOSchema, bytesDTOSquema, imageNameDTOSchema, pathDTOSquema } from '#DTO/image/typesImage.js'
+import { imageDTOSchema } from '#DTO/image/typesImage.js'
 
 // ! Error messages
 
-const { errTypeString, errMinLength, errMaxLength, errRoleEnum, errFormatEmail, errFormatPassword, errTypeObject, errFormatObject } = errorMessageES
+const { errTypeString, errMinLength, errMaxLength, errRoleEnum, errFormatEmail, errFormatPassword } = errorMessageES
 
 // ? VALIDACIONES PARA USER MODEL
 
@@ -13,19 +13,7 @@ export const nameDTOSchema = stringDTOSchema(4, 25)
 
 export const surnameDTOSchema = stringDTOSchema(4, 50)
 
-export const avatarDTOSchema = Type.Optional(Type.Object({
-  imageName: imageNameDTOSchema,
-  path: pathDTOSquema,
-  bytes: bytesDTOSquema,
-  avatar: avatarBoolDTOSchema
-}, {
-  additionalProperties: false,
-  errorMessage: {
-    additionalProperties: errFormatObject,
-    type: errTypeObject
-  }
-}
-))
+export const avatarDTOSchema = Type.Optional(imageDTOSchema)
 
 export const roleDTOSchema = Type.String({
   enum: ['user', 'family', 'admin', 'friend'],

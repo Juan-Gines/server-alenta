@@ -14,9 +14,9 @@ const getAllImages = (req, res, next) => {
 // * Controller return one image
 
 const getOneImage = (req, res, next) => {
-  const { postId } = req.params
+  const { imageId } = req.params
   imageService
-    .getOneImage(postId)
+    .getOneImage(imageId)
     .then((data) => res.json({ status: 'OK', data }))
     .catch((error) => {
       next(error)

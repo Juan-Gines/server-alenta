@@ -1,14 +1,14 @@
 import { Type } from '@sinclair/typebox'
 import Ajv from 'ajv'
 import addErrors from 'ajv-errors'
-import { bodyDTOSchema, titleDTOSchema } from './typesPost.js'
+import { bodyDTOSchema, extractDTOSchema, imagesDTOSquema, posterDTOSquema, titleDTOSchema } from './typesPost.js'
 import { CustomError } from '#Errors/CustomError.js'
 import { errorMessageES } from '#Lang/es/errorMessage.js'
 import { idDTOSchema } from '#DTO/typesGeneral.js'
 
 // ! Error messages
 
-const { errFormatObject, errRequired } = errorMessageES
+const { errRequired } = errorMessageES
 
 // * Validation user personal data
 
@@ -16,12 +16,13 @@ const UpdateDataDTOSchema = Type.Object(
   {
     title: titleDTOSchema,
     body: bodyDTOSchema,
+    extract: extractDTOSchema,
+    poster: posterDTOSquema,
+    images: imagesDTOSquema,
     id: idDTOSchema
   },
   {
-    additionalProperties: false,
     errorMessage: {
-      additionalProperties: errFormatObject,
       required: {
         title: errRequired('título'),
         body: errRequired('cuerpo'),

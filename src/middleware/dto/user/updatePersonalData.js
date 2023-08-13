@@ -7,7 +7,7 @@ import { errorMessageES } from '#Lang/es/errorMessage.js'
 
 // ! Error messages
 
-const { errFormatObject, errRequired } = errorMessageES
+const { errRequired } = errorMessageES
 
 // * Validation user personal data
 
@@ -18,9 +18,7 @@ const UpdateDataDTOSchema = Type.Object(
     avatar: avatarDTOSchema
   },
   {
-    additionalProperties: false,
     errorMessage: {
-      additionalProperties: errFormatObject,
       required: {
         name: errRequired('nombre'),
         surname: errRequired('apellidos')

@@ -3,9 +3,9 @@ import { Type } from '@sinclair/typebox'
 
 // ! Errores
 
-const { errTypeString, errIdErroneo, errMinLength, errMaxLength, errMaximum, errMinimum, errTypeNumber } = errorMessageES
+const { errTypeString, errIdErroneo, errMinLength, errMaxLength, errMaximum, errMinimum, errTypeNumber, errTypeBoolean } = errorMessageES
 
-// tipos para id
+// ? Tipos de validación generales
 
 export const idDTOSchema = Type.String({
   minLength: 24,
@@ -37,6 +37,14 @@ export const numberDTOSchema = (min, max) => {
       type: errTypeNumber,
       maximum: errMaximum(max),
       minimum: errMinimum(min)
+    }
+  })
+}
+
+export const booleanDTOSchema = () => {
+  return Type.Boolean({
+    errorMessage: {
+      type: errTypeBoolean
     }
   })
 }

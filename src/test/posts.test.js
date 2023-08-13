@@ -4,10 +4,11 @@ import server from '../index.js'
 import { badPost, deleteFakePost, fakePostId, getIdFromPost, getPosts, newPost, postDBInit } from './helpers/posts.js'
 import { errorMessageES } from '#Lang/es/errorMessage.js'
 import PostModel from '#Models/post.js'
+import { arrayImages, getImage, newImage } from './helpers/image.js'
 
 // Errores de la api
 
-const { errEmptyPosts, errEmptyPost, errUnAuthorized, errIdErroneo, errMinLength, errMaxLength, errTypeString } = errorMessageES
+const { errEmptyPosts, errEmptyPost, errUnAuthorized, errIdErroneo, errMinLength, errMaxLength, errTypeString, errMaxImages } = errorMessageES
 
 beforeEach(async () => {
   await postDBInit()
@@ -44,8 +45,8 @@ describe('Posts', () => {
       .expect(200)
       .expect('Content-Type', /json/)
     const content = res.body.data
-    expect(content).toHaveProperty('title', 'El primer post del user 1')
-    expect(content).toHaveProperty('body', 'El body del primer post del user 1')
+    expect(content).toHaveProperty('title', 'El post del user 1')
+    expect(content).toHaveProperty('body', 'El body del post del user 1')
     expect(content).toHaveProperty('user')
   })
 
@@ -83,6 +84,7 @@ describe('Posts', () => {
     const content = res.body.data
     expect(content).toHaveProperty('title', 'Nuevo post')
     expect(content).toHaveProperty('body', 'Body del nuevo post')
+    expect(content).toHaveProperty('extract', 'Extracto del nuevo post')
     expect(content).toHaveProperty('user')
     expect(content).toHaveProperty('id')
     expect(content).toHaveProperty('createdAt')
@@ -90,6 +92,42 @@ describe('Posts', () => {
     expect(finalPosts.length).toBe(initialPosts.length + 1)
     expect(user.posts).toContain(content.id)
   })
+
+  test('POST /api/posts creamos un post con imagenes y poster y parametros extra', async () => {
+    const token = await getToken(0)
+    const initialPosts = await getPosts()
+    const res = await api
+      .post('/api/posts')
+      .auth(token, { type: 'bearer' })
+      .send({ ...newPost, images: arrayImages(2), poster: { ...newImage, hola: 'hola' }, err: 'error' })
+      .expect(201)
+      .expect('Content-Type', /json/)
+    const finalPosts = await getPosts()
+    const user = await getUser(token)
+    const content = res.body.data
+    const poster = getImage(content.poster)
+    expect(content).toHaveProperty('images')
+    expect(content).toHaveProperty('poster')
+    expect(content).not.toHaveProperty('hola')
+    expect(finalPosts.length).toBe(initialPosts.length + 1)
+    expect(user.posts).toContain(content.id)
+    expect(user.images).toContain(content.poster)
+    content.images.forEach(image => expect(user.images).toContain(image))
+    expect(poster).not.toHaveProperty('hola')
+  })
+
+  test('POST /api/posts error creamos un post con mas de 10 imagenes', async () => {
+    const token = await getToken(0)
+    const res = await api
+      .post('/api/posts')
+      .auth(token, { type: 'bearer' })
+      .send({ ...newPost, images: arrayImages(11), poster: newImage })
+      .expect(400)
+      .expect('Content-Type', /json/)
+    const content = res.body.data.error.map(e => e.message)
+    expect(content).toContain(errMaxImages)
+  })
+
   test('POST /api/posts post error minLength', async () => {
     const token = await getToken(0)
     const res = await api
@@ -116,7 +154,7 @@ describe('Posts', () => {
     expect(content[1]).toContain(errMaxLength(1000))
   })
 
-  test('POST /api/posts post errores de typo', async () => {
+  test('POST /api/posts post errores de tipo', async () => {
     const token = await getToken(0)
     const res = await api
       .post('/api/posts')
@@ -141,10 +179,29 @@ describe('Posts', () => {
     const content = res.body.data
     expect(content).toHaveProperty('title', 'Nuevo post')
     expect(content).toHaveProperty('body', 'Body del nuevo post')
+    expect(content).toHaveProperty('extract', 'Extracto del nuevo post')
     expect(content).toHaveProperty('user')
     expect(content).toHaveProperty('id')
     expect(content).toHaveProperty('createdAt')
     expect(content).toHaveProperty('updatedAt')
+  })
+
+  test('PATCH /api/posts/ updateamos un post con imagenes y poster', async () => {
+    const token = await getToken(0)
+    const id = await getIdFromPost(0)
+    const res = await api
+      .patch('/api/posts')
+      .auth(token, { type: 'bearer' })
+      .send({ ...newPost, images: [newImage, newImage], poster: newImage, id })
+      .expect(200)
+      .expect('Content-Type', /json/)
+    const content = res.body.data
+    const user = await getUser(token)
+    expect(content).toHaveProperty('images')
+    expect(content).toHaveProperty('poster')
+    expect(user.posts).toContain(content.id)
+    expect(user.images).toContain(content.poster)
+    content.images.forEach(image => expect(user.images).toContain(image))
   })
 
   test('PATCH /api/posts/ updateamos un post id errónea', async () => {
@@ -221,7 +278,7 @@ describe('Posts', () => {
       .expect(200)
       .expect('Content-Type', /json/)
     const content = res.body.data.message
-    expect(content).toEqual('El post "El primer post del user 1", ha sido borrado con éxito.')
+    expect(content).toEqual('El post "El post del user 1", ha sido borrado con éxito.')
   })
 
   test('DELETE /api/posts/:postId error borramos un post de otro usuario', async () => {

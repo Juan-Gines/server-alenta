@@ -8,8 +8,9 @@
     "dev": "cross-env NODE_ENV=developemnt node --watch src/index.js",
     "start": "cross-env NODE_ENV=production node src/index.js",
     "lint": "eslint .",
-    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules NODE_ENV=test jest --silent --runInBand",
+    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules NODE_ENV=test jest --runInBand",
     "test:verbose": "npm run test -- --verbose",
+    "test:silent": "npm run test -- --silent",
     "test:watch": "npm run test -- --watch"
   },
   "keywords": [],

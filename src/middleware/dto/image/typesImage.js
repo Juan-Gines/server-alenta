@@ -1,18 +1,25 @@
-import { numberDTOSchema, stringDTOSchema } from '#DTO/typesGeneral.js'
+import { booleanDTOSchema, numberDTOSchema, stringDTOSchema } from '#DTO/typesGeneral.js'
 import { errorMessageES } from '#Lang/es/errorMessage.js'
 import { Type } from '@sinclair/typebox'
 
 //! Error messages
 
-const { errTypeBoolean } = errorMessageES
+const { errTypeObject, errRequired } = errorMessageES
 
 // ? VALIDACIONES PARA IMAGE MODEL
 
-export const imageNameDTOSchema = stringDTOSchema(4, 50)
-export const pathDTOSquema = stringDTOSchema(4, 50)
-export const bytesDTOSquema = numberDTOSchema(10, 2048)
-export const avatarBoolDTOSchema = Type.Boolean({
+export const imageDTOSchema = Type.Object({
+  imageName: stringDTOSchema(4, 50),
+  path: stringDTOSchema(4, 50),
+  bytes: numberDTOSchema(10, 2048),
+  avatar: Type.Optional(booleanDTOSchema)
+}, {
   errorMessage: {
-    type: errTypeBoolean
+    type: errTypeObject,
+    required: {
+      imageName: errRequired('imageName'),
+      path: errRequired('path'),
+      bytes: errRequired('bytes')
+    }
   }
 })

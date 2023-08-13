@@ -8,7 +8,7 @@ import { errorMessageES } from '#Lang/es/errorMessage.js'
 
 // ! error Messages
 
-const { errFormatObject, errRequired } = errorMessageES
+const { errRequired } = errorMessageES
 
 // * Register Validation data
 
@@ -19,9 +19,7 @@ const RegisterDTOSchema = Type.Object(
     password: passwordDTOSchema
   },
   {
-    additionalProperties: false,
     errorMessage: {
-      additionalProperties: errFormatObject,
       required: {
         name: errRequired('nombre'),
         email: errRequired('email'),
