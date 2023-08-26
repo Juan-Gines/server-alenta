@@ -13,21 +13,17 @@ const getAllUsers = (req, res, next) => {
 
 // * Controller return one user
 
-const getOneUser = async (req, res, next) => {
-  userService
-    .getOneUser(req.userId)
-    .then((data) => res.json({ status: 'OK', data }))
-    .catch((error) => {
-      next(error)
-    })
+const getOneUser = (req, res) => {
+  const { user } = req
+  res.json({ status: 'OK', data: user })
 }
 
 // * Controller update personal data user
 
 const updatePersonalDataUser = (req, res, next) => {
-  const { body, userId } = req
+  const { body, user } = req
   userService
-    .updateOneUser(userId, body)
+    .updateOneUser(user, body)
     .then((updatedUser) => res.json({ status: 'OK', data: updatedUser }))
     .catch((error) => {
       next(error)
@@ -38,7 +34,7 @@ const updatePersonalDataUser = (req, res, next) => {
 
 const deleteOneUser = (req, res, next) => {
   userService
-    .deleteOneUser(req.userId)
+    .deleteOneUser(req.user)
     .then((deletedUser) => res.json({ status: 'OK', data: deletedUser }))
     .catch((error) => {
       next(error)

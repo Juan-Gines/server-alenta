@@ -33,6 +33,17 @@ const createImage = (req, res, next) => {
       next(error)
     })
 }
+// * Create Image
+
+const createImages = (req, res, next) => {
+  const { body, userId } = req
+  imageService
+    .createImages(userId, body)
+    .then((data) => res.status(201).json({ status: 'OK', data }))
+    .catch((error) => {
+      next(error)
+    })
+}
 
 // * Controller update personal data user
 
@@ -63,6 +74,7 @@ export {
   getAllImages,
   getOneImage,
   createImage,
+  createImages,
   updateImage,
   deleteImage
 }

@@ -384,9 +384,9 @@ describe('user', () => {
       .expect(200)
       .expect('Content-Type', /json/)
     const content = res.body.data
-    const imagen = await api.get(`/api/images/${content.avatar}`)
     expect(content).toHaveProperty('avatar')
-    expect(imagen.body.data).toHaveProperty('path')
+    expect(content.avatar).toHaveProperty('path')
+    expect(content.avatar).toHaveProperty('imageName')
   })
 
   test('PATCH /api/users/personaldata error requeridos deontro de avatar', async () => {
@@ -449,6 +449,6 @@ describe('user', () => {
       .expect('Content-Type', /json/)
     const content = await getUsers(token2)
     expect(content.length).toBe(initialContent.length - 1)
-    expect(res.body.data.message).toEqual('El usuario "Raquel", ha sido borrado con éxito.')
+    expect(res.body.data).toHaveProperty('name')
   })
 })

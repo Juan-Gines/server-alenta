@@ -37,7 +37,7 @@ const loginUser = async (email, password) => {
 // * Create new user and return this new user from DB
 
 const registerNewUser = async (newUser) => {
-  const { email, password } = newUser
+  const { email } = newUser
   try {
     const user = await UserModel.findOne({ email })
 
@@ -45,12 +45,7 @@ const registerNewUser = async (newUser) => {
       throw new CustomError(409, errEmailDuplicated)
     }
 
-    const passHassed = await hash(password, SALT)
-    const userToInsert = {
-      ...newUser,
-      password: passHassed
-    }
-    const createdUser = new UserModel(userToInsert)
+    const createdUser = new UserModel(newUser)
     await createdUser.save()
     return createdUser
   } catch (error) {

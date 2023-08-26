@@ -26,7 +26,7 @@ const userExtractor = async (req, res, next) => {
     if (!userExist) {
       throw errUnAuthorized
     }
-    req.userId = decodedToken.id
+    req.user = userExist
     next()
   } catch (error) {
     const errorCustom = new CustomError(error?.status ?? 401, error?.message ?? error)

@@ -4,7 +4,8 @@ import trimBody from '#DTO/trimBody.js'
 import { createPost, deletePost, getAllPosts, getOnePost, updatePost } from '#Controllers/postController.js'
 import createPostDTO from '#DTO/post/createPost.js'
 import updatePostDTO from '#DTO/post/updatePost.js'
-import imagesPost from '#Middleware/post/imagesPost.js'
+import updateMiddleware from '#Middleware/post/updatePost.js'
+import createMiddleware from '#Middleware/post/createPost.js'
 
 const router = express.Router()
 
@@ -16,9 +17,9 @@ router
 
   .get('/:postId', getOnePost)
 
-  .post('/', trimBody, userExtractor, createPostDTO, imagesPost, createPost)
+  .post('/', trimBody, userExtractor, createPostDTO, createMiddleware, createPost)
 
-  .patch('/', trimBody, userExtractor, updatePostDTO, imagesPost, updatePost)
+  .patch('/', trimBody, userExtractor, updatePostDTO, updateMiddleware, updatePost)
 
   .delete('/:postId', userExtractor, deletePost)
 

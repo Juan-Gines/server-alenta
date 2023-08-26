@@ -30,14 +30,14 @@ const registerController = (req, res, next) => {
 // * Update password user controller
 
 const updatePasswordController = (req, res, next) => {
-  const { body, userId } = req
+  const { body, user } = req
   const { oldPassword, newPassword } = body
   if (oldPassword === newPassword) {
     const error = new CustomError(400, errorMessageES.errNewPassEqualToOld)
     next(error)
   }
   authService
-    .updatePasswordUser(userId, body)
+    .updatePasswordUser(user, body)
     .then((passUpdated) => res.json({ status: 'OK', data: passUpdated }))
     .catch((error) => {
       next(error)

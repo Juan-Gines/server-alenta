@@ -1,3 +1,4 @@
+import imageService from '#Services/imageService.js'
 import mongoose, { model } from 'mongoose'
 const { Schema } = mongoose
 
@@ -12,6 +13,12 @@ const postSchema = new Schema({
   user: { type: Schema.Types.ObjectId, trim: true, required: true, ref: 'User' }
 }, {
   timestamps: true
+})
+
+postSchema.post('save', async function (post) {
+  const { images, poster, _id } = post
+  if (images) await imageService.updateImages(images, { post: _id })
+  if (poster) await imageService.updateOneImage(poster, { post: _id })
 })
 
 postSchema.set('toJSON', {

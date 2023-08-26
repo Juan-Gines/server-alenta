@@ -26,8 +26,8 @@ const getOnePost = (req, res, next) => {
 // * Create Post
 
 const createPost = (req, res, next) => {
-  const { body, userId } = req
-  postService.createOnePost(userId, body)
+  const { body, user } = req
+  postService.createOnePost(user, body)
     .then((data) => res.status(201).json({ status: 'OK', data }))
     .catch((error) => {
       next(error)
@@ -37,9 +37,9 @@ const createPost = (req, res, next) => {
 // * Controller update data from post
 
 const updatePost = (req, res, next) => {
-  const { body, userId } = req
+  const { body, user } = req
   postService
-    .updateOnePost(userId, body)
+    .updateOnePost(user, body)
     .then((data) => res.json({ status: 'OK', data }))
     .catch((error) => {
       next(error)
@@ -49,10 +49,10 @@ const updatePost = (req, res, next) => {
 // * Delete post
 
 const deletePost = (req, res, next) => {
-  const { userId } = req
+  const { user } = req
   const { postId } = req.params
   postService
-    .deleteOnePost(userId, postId)
+    .deleteOnePost(user, postId)
     .then((data) => res.json({ status: 'OK', data }))
     .catch((error) => {
       next(error)

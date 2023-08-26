@@ -25,12 +25,12 @@ const initialUsers = [
   {
     name: 'Juan',
     email: 'juan@test.com',
-    password: '$2b$10$mDMKNGA3vuF8hoE9AxzcQe94LRqB4kQEVyAmCIv3pAwbzNHmNETNu'
+    password: 'Test1234'
   },
   {
     name: 'Raquel',
     email: 'raquel@test.com',
-    password: '$2b$10$mDMKNGA3vuF8hoE9AxzcQe94LRqB4kQEVyAmCIv3pAwbzNHmNETNu'
+    password: 'Test1234'
   }
 ]
 
@@ -61,10 +61,12 @@ const errTokenNoUser = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0YzQzZDE
 
 const userDBInit = async () => {
   await UserModel.deleteMany({})
-  const newUser1 = new UserModel(initialUsers[0])
-  await newUser1.save()
-  const newUser2 = new UserModel(initialUsers[1])
-  await newUser2.save()
+  await insertUser(initialUsers[0])
+  await insertUser(initialUsers[1])
+}
+
+const insertUser = async (body) => {
+  await api.post('/api/auth/register').send(body)
 }
 
 // Obtener token

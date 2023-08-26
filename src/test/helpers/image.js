@@ -21,8 +21,15 @@ const getImage = async (imageId) => {
   return image
 }
 
+// const getImages = async (images) => {
+//   return Promise
+//     .all(images.map(image => imageService.getOneImage(image)))
+//     .then(newImages => newImages)
+// }
+
 export {
   newImage,
   arrayImages,
   getImage
+
 }

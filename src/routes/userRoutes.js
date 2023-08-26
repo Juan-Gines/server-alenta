@@ -3,7 +3,6 @@ import { getAllUsers, getOneUser, deleteOneUser, updatePersonalDataUser } from '
 import userUpdatePersonalDataDTO from '#DTO/user/updatePersonalData.js'
 import userExtractor from '#Auth/userExtractor.js'
 import trimBody from '#DTO/trimBody.js'
-import avatarUser from '#Middleware/user/avatarUser.js'
 
 const router = express.Router()
 
@@ -11,12 +10,14 @@ const router = express.Router()
   * Users Routes */
 router
 
-  .get('/', userExtractor, getAllUsers)
+  .use(userExtractor)
 
-  .get('/profile', userExtractor, getOneUser)
+  .get('/', getAllUsers)
 
-  .patch('/personaldata', trimBody, userExtractor, userUpdatePersonalDataDTO, avatarUser, updatePersonalDataUser)
+  .get('/profile', getOneUser)
 
-  .delete('/', userExtractor, deleteOneUser)
+  .patch('/personaldata', trimBody, userUpdatePersonalDataDTO, updatePersonalDataUser)
+
+  .delete('/', deleteOneUser)
 
 export default router
