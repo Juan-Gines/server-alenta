@@ -1,6 +1,8 @@
 import supertest from 'supertest'
 import expressApp from '#Config/express.js'
 import UserModel from '#Models/user.js'
+import authService from '#Services/authService.js'
+import userService from '#Services/userService.js'
 
 const api = supertest(expressApp)
 
@@ -61,36 +63,35 @@ const errTokenNoUser = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0YzQzZDE
 
 const userDBInit = async () => {
   await UserModel.deleteMany({})
-  await insertUser(initialUsers[0])
-  await insertUser(initialUsers[1])
+  const user1 = await insertUser(initialUsers[0])
+  const user2 = await insertUser(initialUsers[1])
 }
 
 const insertUser = async (body) => {
-  await api.post('/api/auth/register').send(body)
+  const user = UserModel(body)
+  await user.save()
+  return user
 }
 
 // Obtener token
 
 const getToken = async (num = 1) => {
-  const login = await api.post('/api/auth/login').send({
-    email: initialUsers[num].email,
-    password: userToInsert.password
-  })
-  return login.body.data.token
+  const login = await authService.loginUser(initialUsers[num].email, userToInsert.password)
+  return login.token
 }
 
 // Obtener un get all users
 
-const getUsers = async (token) => {
-  const content = await api.get('/api/users')
-    .auth(token, { type: 'bearer' })
-  return content.body.data
+const getUsers = async () => {
+  const content = await userService.getAllUsers()
+  return content
 }
 
 // Obtener un usuario en concreto
 
 const getUser = async (token) => {
-  const content = await api.get('/api/users/profile')
+  const content = await api
+    .get('/api/users/profile')
     .auth(token, { type: 'bearer' })
   return content.body.data
 }
