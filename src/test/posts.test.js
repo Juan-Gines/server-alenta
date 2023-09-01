@@ -274,7 +274,6 @@ describe('Posts', () => {
       .expect(401)
       .expect('Content-Type', /json/)
     const afterUser = await getUser(token)
-    console.log(initialUser, afterUser)
     const content = res.body.data.error
     const content2 = res2.body.data.error
     expect(content).toEqual(errEmptyPost)

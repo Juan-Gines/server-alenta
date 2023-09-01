@@ -65,6 +65,7 @@ const userDBInit = async () => {
   await UserModel.deleteMany({})
   const user1 = await insertUser(initialUsers[0])
   const user2 = await insertUser(initialUsers[1])
+  return [user1, user2]
 }
 
 const insertUser = async (body) => {

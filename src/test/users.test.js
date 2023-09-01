@@ -5,8 +5,10 @@ import { api, badUser, errTokenExpired, errTokenNoUser, getUsers, getToken, init
 
 const error = errorMessageES
 
+let users
+
 beforeEach(async () => {
-  await userDBInit()
+  users = await userDBInit()
 })
 
 afterAll(async () => {
@@ -17,42 +19,40 @@ afterAll(async () => {
 describe('auth', () => {
   test('POST api/auth/register guarda un usuario', async () => {
     const token = await getToken()
-    const initialContent = await getUsers(token)
     const res = await api
       .post('/api/auth/register')
       .send(userToInsert)
       .expect(201)
       .expect('Content-Type', /json/)
-    const content = await getUsers(token)
-    const data = res.body.data
-    expect(data).toHaveProperty('name')
-    expect(data).toHaveProperty('email')
-    expect(data).toHaveProperty('role')
-    expect(data).toHaveProperty('updatedAt')
-    expect(data).toHaveProperty('createdAt')
-    expect(data).toHaveProperty('id')
-    expect(content.length).toBe(initialContent.length + 1)
+    const finalUsers = await getUsers(token)
+    const newPost = res.body.data
+    expect(newPost).toHaveProperty('name')
+    expect(newPost).toHaveProperty('email')
+    expect(newPost).toHaveProperty('role')
+    expect(newPost).toHaveProperty('updatedAt')
+    expect(newPost).toHaveProperty('createdAt')
+    expect(newPost).toHaveProperty('id')
+    expect(finalUsers.length).toBe(users.length + 1)
   })
 
   test('POST api/auth/register guarda un usuario con body sin trim', async () => {
     const { trimEmailValue, trimNameValue, trimPassValue } = badUser
     const user = { '   email   ': trimEmailValue, '   name   ': trimNameValue, '   password   ': trimPassValue }
     const token = await getToken()
-    const initialContent = await getUsers(token)
     const res = await api
       .post('/api/auth/register')
       .send(user)
       .expect(201)
       .expect('Content-Type', /json/)
-    const content = await getUsers(token)
-    const data = res.body.data
-    expect(data).toHaveProperty('name')
-    expect(data).toHaveProperty('email')
-    expect(data).toHaveProperty('role')
-    expect(data).toHaveProperty('updatedAt')
-    expect(data).toHaveProperty('createdAt')
-    expect(data).toHaveProperty('id')
-    expect(content.length).toBe(initialContent.length + 1)
+    const finalUsers = await getUsers(token)
+    const newPost = res.body.data
+    expect(newPost).toHaveProperty('name')
+    expect(newPost).toHaveProperty('email')
+    expect(newPost).toHaveProperty('role')
+    expect(newPost).toHaveProperty('updatedAt')
+    expect(newPost).toHaveProperty('createdAt')
+    expect(newPost).toHaveProperty('id')
+    expect(finalUsers.length).toBe(users.length + 1)
   })
 
   test('POST api/auth/register error name min, email format ,password erroneo min', async () => {
@@ -285,9 +285,8 @@ describe('user', () => {
   })
 
   test('GET /api/users token Expirado', async () => {
-    const token = errTokenExpired
     const res = await api.get('/api/users')
-      .auth(token, { type: 'bearer' })
+      .auth(errTokenExpired, { type: 'bearer' })
       .expect(401)
       .expect('Content-Type', /json/)
     const content = res.body.data.error
@@ -295,9 +294,8 @@ describe('user', () => {
   })
 
   test('GET /api/users token con usuario inexistente', async () => {
-    const token = errTokenNoUser
     const res = await api.get('/api/users')
-      .auth(token, { type: 'bearer' })
+      .auth(errTokenNoUser, { type: 'bearer' })
       .expect(401)
       .expect('Content-Type', /json/)
     const content = res.body.data.error
@@ -389,7 +387,7 @@ describe('user', () => {
     expect(content.avatar).toHaveProperty('imageName')
   })
 
-  test('PATCH /api/users/personaldata error requeridos deontro de avatar', async () => {
+  test('PATCH /api/users/personaldata error requeridos dentro de avatar', async () => {
     const token = await getToken()
     const res = await api.patch('/api/users/personaldata')
       .auth(token, { type: 'bearer' })
@@ -442,13 +440,12 @@ describe('user', () => {
   test('DELETE /api/users Borra un usuario', async () => {
     const token1 = await getToken()
     const token2 = await getToken(0)
-    const initialContent = await getUsers(token1)
     const res = await api.delete('/api/users')
       .auth(token1, { type: 'bearer' })
       .expect(200)
       .expect('Content-Type', /json/)
     const content = await getUsers(token2)
-    expect(content.length).toBe(initialContent.length - 1)
+    expect(content.length).toBe(users.length - 1)
     expect(res.body.data).toHaveProperty('name')
   })
 })
