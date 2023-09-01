@@ -22,48 +22,12 @@ const getOneImage = (req, res, next) => {
       next(error)
     })
 }
-// * Create Image
 
-const createImage = (req, res, next) => {
-  const { body, userId } = req
-  imageService
-    .createOneImage(userId, body)
-    .then((data) => res.status(201).json({ status: 'OK', data }))
-    .catch((error) => {
-      next(error)
-    })
-}
-// * Create Image
-
-const createImages = (req, res, next) => {
-  const { body, userId } = req
-  imageService
-    .createImages(userId, body)
-    .then((data) => res.status(201).json({ status: 'OK', data }))
-    .catch((error) => {
-      next(error)
-    })
-}
-
-// * Controller update personal data user
-
-const updateImage = (req, res, next) => {
-  const { body, userId } = req
-  imageService
-    .updateOneImage(userId, body)
-    .then((data) => res.json({ status: 'OK', data }))
-    .catch((error) => {
-      next(error)
-    })
-}
-
-// * Delete user
-
+// * Delete Image
 const deleteImage = (req, res, next) => {
-  const { userId } = req
   const { imageId } = req.params
   imageService
-    .deleteOneImage(userId, imageId)
+    .deleteOneImage(imageId)
     .then((data) => res.json({ status: 'OK', data }))
     .catch((error) => {
       next(error)
@@ -73,8 +37,5 @@ const deleteImage = (req, res, next) => {
 export {
   getAllImages,
   getOneImage,
-  createImage,
-  createImages,
-  updateImage,
   deleteImage
 }

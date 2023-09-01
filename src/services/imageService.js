@@ -65,7 +65,7 @@ const createOneImage = async (userId, image) => {
 
 //* Crear varias imagenes
 
-const createImages = async (userId, images) => {
+const createImages = (userId, images) => {
   return Promise
     .all(images.map(image => createOneImage(userId, image)))
     .then(createdImages => createdImages)
@@ -91,7 +91,7 @@ const updateOneImage = async (imageId, changes) => {
 
 //* Updatear varias imagenes
 
-const updateImages = async (images, changes) => {
+const updateImages = (images, changes) => {
   return Promise
     .all(images.map(image => updateOneImage(image, changes)))
     .then(updatedImages => updatedImages)
@@ -100,7 +100,7 @@ const updateImages = async (images, changes) => {
     })
 }
 
-// * Delete one user from DB
+// * Delete one image from DB
 
 const deleteOneImage = async (imageId) => {
   try {
@@ -116,6 +116,15 @@ const deleteOneImage = async (imageId) => {
   }
 }
 
+const deleteImages = (images) => {
+  return Promise
+    .all(images.map(image => deleteOneImage(image)))
+    .then(createdImages => createdImages)
+    .catch((error) => {
+      throw new CustomError(error?.status ?? 500, error?.message ?? error)
+    })
+}
+
 export default {
   getAllImages,
   getOneImage,
@@ -123,5 +132,6 @@ export default {
   createImages,
   updateOneImage,
   updateImages,
-  deleteOneImage
+  deleteOneImage,
+  deleteImages
 }

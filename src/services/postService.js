@@ -29,14 +29,15 @@ const getAllPosts = () => {
 
 // * Return one post from DB
 
-const getOnePost = (postId) => {
+const getOnePost = (postId, user = undefined) => {
   return PostModel.findById(postId)
-    .populate('user', {
-      name: 1,
-      email: 1
-    })
-    .then(post => {
+    .populate(['user', 'images', 'poster'])
+    .then(async post => {
       if (!post) {
+        if (user) {
+          user.posts = user.posts.filter(p => !p.equals(postId))
+          await user.save()
+        }
         throw new CustomError(404, errEmptyPost)
       }
       return post
@@ -61,7 +62,7 @@ const createOnePost = async (user, post) => {
     await newPost.save()
     userToUpdate.posts.push(newPost._id)
     await userToUpdate.save()
-    return newPost.populate(['poster', 'images'])
+    return newPost.populate(['poster', 'images', 'user'])
   } catch (error) {
     throw new CustomError(error?.status ?? 500, error?.message ?? error)
   }
@@ -69,7 +70,7 @@ const createOnePost = async (user, post) => {
 
 // * Update one post and user and return this posts from DB
 
-const updateOnePost = async (user, changes) => {
+const updateOnePost = async (changes) => {
   const { id, ...infoToUpdate } = changes
   try {
     const postForUpdate = await PostModel.findByIdAndUpdate(id, infoToUpdate, { new: true })
@@ -94,7 +95,7 @@ const deleteOnePost = async (user, postId) => {
     if (!post.user.equals(userInspect._id)) {
       throw new CustomError(401, errUnAuthorized)
     }
-    const postDeleted = await post.deleteOne()
+    const postDeleted = await PostModel.findByIdAndDelete(postId)
     const pull = { $pull: { posts: postId } }
     await UserModel.findByIdAndUpdate(userInspect._id, pull, { new: true })
     return postDeleted

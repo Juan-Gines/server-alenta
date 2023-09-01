@@ -55,7 +55,7 @@ userSchema.post('findOneAndDelete', async function (user) {
   try {
     if (avatar) await imageService.deleteOneImage(avatar)
   } catch (error) {
-    throw new CustomError(500, error)
+    throw new CustomError(error?.status ?? 500, error?.message ?? error)
   }
 })
 

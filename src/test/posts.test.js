@@ -80,7 +80,6 @@ describe('Posts', () => {
       .expect(201)
       .expect('Content-Type', /json/)
     const finalPosts = await getPosts()
-    const user = await getUser(token)
     const content = res.body.data
     expect(content).toHaveProperty('title', 'Nuevo post')
     expect(content).toHaveProperty('body', 'Body del nuevo post')
@@ -90,7 +89,7 @@ describe('Posts', () => {
     expect(content).toHaveProperty('createdAt')
     expect(content).toHaveProperty('updatedAt')
     expect(finalPosts.length).toBe(initialPosts.length + 1)
-    expect(user.posts).toContain(content.id)
+    expect(content.user.posts).toContain(content.id)
   })
 
   test('POST /api/posts creamos un post con imagenes y poster y parametros extra', async () => {
@@ -190,10 +189,9 @@ describe('Posts', () => {
       .patch('/api/posts')
       .auth(token, { type: 'bearer' })
       .send({ ...newPost, images: arrayImages(2), poster: newImage, id })
-      .expect(404)
+      .expect(200)
       .expect('Content-Type', /json/)
     const content = res.body.data
-    console.log(content)
     expect(content).toHaveProperty('images')
     expect(content).toHaveProperty('poster')
     expect(content.poster).toHaveProperty('post')
@@ -205,7 +203,7 @@ describe('Posts', () => {
   test('PATCH /api/posts/ error updateamos un post con imagenes metiéndole más de 10 en total', async () => {
     const token = await getToken(0)
     const id = await getIdFromPost(0)
-    const res1 = await api
+    await api
       .patch('/api/posts')
       .auth(token, { type: 'bearer' })
       .send({ ...newPost, images: arrayImages(4), poster: newImage, id })
@@ -213,10 +211,9 @@ describe('Posts', () => {
       .patch('/api/posts')
       .auth(token, { type: 'bearer' })
       .send({ ...newPost, images: arrayImages(7), poster: newImage, id })
-      .expect(404)
+      .expect(400)
       .expect('Content-Type', /json/)
-    console.log(res1.body, res.body)
-    const content = res.body.data.error.message
+    const content = res.body.data.error
     expect(content).toEqual(errMaxImages)
   })
 
@@ -274,10 +271,10 @@ describe('Posts', () => {
       .patch('/api/posts')
       .auth(token, { type: 'bearer' })
       .send({ ...newPost, id })
-      .expect(404)
+      .expect(401)
       .expect('Content-Type', /json/)
-    console.log(res.body, res2.body)
     const afterUser = await getUser(token)
+    console.log(initialUser, afterUser)
     const content = res.body.data.error
     const content2 = res2.body.data.error
     expect(content).toEqual(errEmptyPost)

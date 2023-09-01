@@ -37,9 +37,9 @@ const createPost = (req, res, next) => {
 // * Controller update data from post
 
 const updatePost = (req, res, next) => {
-  const { body, user } = req
+  const { body } = req
   postService
-    .updateOnePost(user, body)
+    .updateOnePost(body)
     .then((data) => res.json({ status: 'OK', data }))
     .catch((error) => {
       next(error)

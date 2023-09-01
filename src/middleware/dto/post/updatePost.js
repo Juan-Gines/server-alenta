@@ -26,6 +26,7 @@ const UpdateDataDTOSchema = Type.Object(
       required: {
         title: errRequired('título'),
         body: errRequired('cuerpo'),
+        extract: errRequired('extracto'),
         id: errRequired('id')
       }
     }

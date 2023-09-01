@@ -21,6 +21,12 @@ postSchema.post('save', async function (post) {
   if (poster) await imageService.updateOneImage(poster, { post: _id })
 })
 
+postSchema.post('findOneAndDelete', async function (post) {
+  const { images, poster } = post
+  if (images) await imageService.deleteImages(images)
+  if (poster) await imageService.deleteOneImage(poster)
+})
+
 postSchema.set('toJSON', {
   transform: (document, returnedObject) => {
     returnedObject.id = returnedObject._id
