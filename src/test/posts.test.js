@@ -9,7 +9,9 @@ import { arrayImages, getImage, newImage } from './helpers/image.js'
 // Errores de la api
 
 const { errEmptyPosts, errEmptyPost, errUnAuthorized, errIdErroneo, errMinLength, errMaxLength, errTypeString, errMaxImages } = errorMessageES
+// TODO : reestructurar los test para hacerlos más rápidos
 
+// let users
 beforeEach(async () => {
   await postDBInit()
 })
