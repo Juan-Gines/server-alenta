@@ -1,6 +1,6 @@
 // Datos para insertar una imagen
 
-import ImageModel from '#Models/image.js'
+import imageService from '#Services/imageService.js'
 
 const newImage = {
   imageName: 'imagen.jpg',
@@ -17,7 +17,7 @@ const arrayImages = (count) => {
 }
 
 const getImage = async (imageId) => {
-  const image = await ImageModel.findById(imageId)
+  const image = await imageService.getOneImage(imageId)
   return image
 }
 

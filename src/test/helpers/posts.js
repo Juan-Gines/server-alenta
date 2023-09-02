@@ -1,5 +1,6 @@
 import ImageModel from '#Models/image.js'
 import PostModel from '#Models/post.js'
+import postService from '#Services/postService.js'
 import { api, getToken, userDBInit } from './user.js'
 
 // Post iniciales para la BD
@@ -37,33 +38,26 @@ const postDBInit = async () => {
   await ImageModel.deleteMany({})
   const token1 = await getToken(0)
   const token2 = await getToken(1)
-  await insertPost(token1, initialPosts[0])
-  await insertPost(token2, initialPosts[1])
+  const post1 = await insertPost(token1, initialPosts[0])
+  const post2 = await insertPost(token2, initialPosts[1])
+  return [token1, post1, post2]
 }
 
 // Inserta un post dentro de la DB
 
 const insertPost = async (token, post) => {
-  await api
+  const postInserted = await api
     .post('/api/posts')
     .auth(token, { type: 'bearer' })
     .send(post)
-}
-
-// Recupera la id de un post
-
-const getIdFromPost = async (post = 0) => {
-  const res = await api.get('/api/posts')
-  const content = res.body.data[post]
-  return content.id
+  return postInserted.body.data
 }
 
 // Recuperamos todos los posts de la DB
 
 const getPosts = async () => {
-  const res = await api.get('/api/posts')
-  const content = res.body.data
-  return content
+  const res = await postService.getAllPosts('/api/posts')
+  return res
 }
 
 // Borramos un post de la BD dejando la id en el usuario
@@ -83,7 +77,6 @@ const badPost = {
 
 export {
   postDBInit,
-  getIdFromPost,
   newPost,
   getPosts,
   fakePostId,
