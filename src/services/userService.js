@@ -52,7 +52,7 @@ const deleteOneUser = async (user) => {
   }
 }
 
-export default {
+export {
   getAllUsers,
   updateOneUser,
   deleteOneUser,

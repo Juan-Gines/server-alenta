@@ -1,10 +1,9 @@
-import imageService from '#Services/imageService.js'
+import { deleteOneImage, getAllImages, getOneImage } from '#Services/imageService.js'
 
 // * Controller return all images
 
-const getAllImages = (req, res, next) => {
-  imageService
-    .getAllImages()
+const getAllImagesController = (req, res, next) => {
+  getAllImages()
     .then((data) => res.json({ status: 'OK', data }))
     .catch(error => {
       next(error)
@@ -13,10 +12,9 @@ const getAllImages = (req, res, next) => {
 
 // * Controller return one image
 
-const getOneImage = (req, res, next) => {
+const getOneImageController = (req, res, next) => {
   const { imageId } = req.params
-  imageService
-    .getOneImage(imageId)
+  getOneImage(imageId)
     .then((data) => res.json({ status: 'OK', data }))
     .catch((error) => {
       next(error)
@@ -24,10 +22,9 @@ const getOneImage = (req, res, next) => {
 }
 
 // * Delete Image
-const deleteImage = (req, res, next) => {
+const deleteImageController = (req, res, next) => {
   const { imageId } = req.params
-  imageService
-    .deleteOneImage(imageId)
+  deleteOneImage(imageId)
     .then((data) => res.json({ status: 'OK', data }))
     .catch((error) => {
       next(error)
@@ -35,7 +32,7 @@ const deleteImage = (req, res, next) => {
 }
 
 export {
-  getAllImages,
-  getOneImage,
-  deleteImage
+  getAllImagesController,
+  getOneImageController,
+  deleteImageController
 }

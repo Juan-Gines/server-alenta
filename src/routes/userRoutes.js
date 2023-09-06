@@ -1,5 +1,5 @@
 import express from 'express'
-import { getAllUsers, getOneUser, deleteOneUser, updatePersonalDataUser } from '#Controllers/userController.js'
+import { getAllUsersController, getOneUserController, updatePersonalDataUserController, deleteOneUserController } from '#Controllers/userController.js'
 import userUpdatePersonalDataDTO from '#DTO/user/updatePersonalData.js'
 import userExtractor from '#Auth/userExtractor.js'
 import trimBody from '#DTO/trimBody.js'
@@ -12,12 +12,12 @@ router
 
   .use(userExtractor)
 
-  .get('/', getAllUsers)
+  .get('/', getAllUsersController)
 
-  .get('/profile', getOneUser)
+  .get('/profile', getOneUserController)
 
-  .patch('/personaldata', trimBody, userUpdatePersonalDataDTO, updatePersonalDataUser)
+  .patch('/personaldata', trimBody, userUpdatePersonalDataDTO, updatePersonalDataUserController)
 
-  .delete('/', deleteOneUser)
+  .delete('/', deleteOneUserController)
 
 export default router

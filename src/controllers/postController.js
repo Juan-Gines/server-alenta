@@ -1,10 +1,9 @@
-import postService from '#Services/postService.js'
+import { createOnePost, deleteOnePost, getAllPosts, getOnePost, updateOnePost } from '#Services/postService.js'
 
 // * Controller return all posts
 
-const getAllPosts = (req, res, next) => {
-  postService
-    .getAllPosts()
+const getAllPostsController = (req, res, next) => {
+  getAllPosts()
     .then((data) => res.json({ status: 'OK', data }))
     .catch(error => {
       next(error)
@@ -13,10 +12,9 @@ const getAllPosts = (req, res, next) => {
 
 // * Controller return one post
 
-const getOnePost = (req, res, next) => {
+const getOnePostController = (req, res, next) => {
   const { postId } = req.params
-  postService
-    .getOnePost(postId)
+  getOnePost(postId)
     .then((data) => res.json({ status: 'OK', data }))
     .catch((error) => {
       next(error)
@@ -25,9 +23,9 @@ const getOnePost = (req, res, next) => {
 
 // * Create Post
 
-const createPost = (req, res, next) => {
+const createPostController = (req, res, next) => {
   const { body, user } = req
-  postService.createOnePost(user, body)
+  createOnePost(user, body)
     .then((data) => res.status(201).json({ status: 'OK', data }))
     .catch((error) => {
       next(error)
@@ -36,10 +34,9 @@ const createPost = (req, res, next) => {
 
 // * Controller update data from post
 
-const updatePost = (req, res, next) => {
+const updatePostController = (req, res, next) => {
   const { body } = req
-  postService
-    .updateOnePost(body)
+  updateOnePost(body)
     .then((data) => res.json({ status: 'OK', data }))
     .catch((error) => {
       next(error)
@@ -48,11 +45,10 @@ const updatePost = (req, res, next) => {
 
 // * Delete post
 
-const deletePost = (req, res, next) => {
+const deletePostController = (req, res, next) => {
   const { user } = req
   const { postId } = req.params
-  postService
-    .deleteOnePost(user, postId)
+  deleteOnePost(user, postId)
     .then((data) => res.json({ status: 'OK', data }))
     .catch((error) => {
       next(error)
@@ -60,9 +56,9 @@ const deletePost = (req, res, next) => {
 }
 
 export {
-  getAllPosts,
-  getOnePost,
-  createPost,
-  updatePost,
-  deletePost
+  getAllPostsController,
+  getOnePostController,
+  createPostController,
+  updatePostController,
+  deletePostController
 }

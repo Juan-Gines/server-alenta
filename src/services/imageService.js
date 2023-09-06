@@ -125,7 +125,7 @@ const deleteImages = (images) => {
     })
 }
 
-export default {
+export {
   getAllImages,
   getOneImage,
   createOneImage,

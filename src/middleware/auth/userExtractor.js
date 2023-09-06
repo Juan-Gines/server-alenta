@@ -1,6 +1,6 @@
 import { CustomError } from '#Errors/CustomError.js'
 import { errorMessageES } from '#Lang/es/errorMessage.js'
-import userService from '#Services/userService.js'
+import { userExist } from '#Services/userService.js'
 import jwt from 'jsonwebtoken'
 
 // ! Error messages
@@ -22,11 +22,11 @@ const userExtractor = async (req, res, next) => {
       throw errUnAuthorized
     }
     const decodedToken = jwt.verify(token, process.env.JWT_PRIVATE_KEY)
-    const userExist = await userService.userExist(decodedToken.id)
-    if (!userExist) {
+    const user = await userExist(decodedToken.id)
+    if (!user) {
       throw errUnAuthorized
     }
-    req.user = userExist
+    req.user = user
     next()
   } catch (error) {
     const errorCustom = new CustomError(error?.status ?? 401, error?.message ?? error)

@@ -1,6 +1,6 @@
 // Datos para insertar una imagen
 
-import imageService from '#Services/imageService.js'
+import { getOneImage } from '#Services/imageService.js'
 
 const newImage = {
   imageName: 'imagen.jpg',
@@ -17,15 +17,9 @@ const arrayImages = (count) => {
 }
 
 const getImage = async (imageId) => {
-  const image = await imageService.getOneImage(imageId)
+  const image = await getOneImage(imageId)
   return image
 }
-
-// const getImages = async (images) => {
-//   return Promise
-//     .all(images.map(image => imageService.getOneImage(image)))
-//     .then(newImages => newImages)
-// }
 
 export {
   newImage,

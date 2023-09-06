@@ -1,7 +1,7 @@
 import ImageModel from '#Models/image.js'
 import PostModel from '#Models/post.js'
-import postService from '#Services/postService.js'
-import { api, getToken, userDBInit } from './user.js'
+import { createOnePost, getAllPosts } from '#Services/postService.js'
+import { getToken, userDBInit } from './user.js'
 
 // Post iniciales para la BD
 
@@ -33,30 +33,26 @@ const fakePostId = '64cf7548a22457137656ee5d'
 // Iniciamos la BD con 4 registros de 2 usuarios
 
 const postDBInit = async () => {
-  await userDBInit()
+  const users = await userDBInit()
   await PostModel.deleteMany({})
   await ImageModel.deleteMany({})
-  const token1 = await getToken(0)
-  const token2 = await getToken(1)
-  const post1 = await insertPost(token1, initialPosts[0])
-  const post2 = await insertPost(token2, initialPosts[1])
-  return [token1, post1, post2]
+  const token = await getToken(0)
+  const post1 = await insertPost(users[0], initialPosts[0])
+  const post2 = await insertPost(users[1], initialPosts[1])
+  return [token, post1, post2]
 }
 
 // Inserta un post dentro de la DB
 
-const insertPost = async (token, post) => {
-  const postInserted = await api
-    .post('/api/posts')
-    .auth(token, { type: 'bearer' })
-    .send(post)
-  return postInserted.body.data
+const insertPost = async (user, post) => {
+  const postInserted = await createOnePost(user, post)
+  return postInserted
 }
 
 // Recuperamos todos los posts de la DB
 
 const getPosts = async () => {
-  const res = await postService.getAllPosts('/api/posts')
+  const res = await getAllPosts()
   return res
 }
 
@@ -77,6 +73,7 @@ const badPost = {
 
 export {
   postDBInit,
+  insertPost,
   newPost,
   getPosts,
   fakePostId,

@@ -1,6 +1,6 @@
 import { SALT } from '#Constants/salt.js'
 import { CustomError } from '#Errors/CustomError.js'
-import imageService from '#Services/imageService.js'
+import { createOneImage, deleteOneImage, updateOneImage } from '#Services/imageService.js'
 import { hash } from 'bcrypt'
 import mongoose, { model } from 'mongoose'
 const { Schema } = mongoose
@@ -37,10 +37,10 @@ userSchema.pre('findOneAndUpdate', async function (next) {
     if (newAvatar) {
       const user = await this.model.findOne(this.getQuery())
       if (!user.avatar) {
-        this.getUpdate().avatar = (await imageService.createOneImage(this.getFilter(), newAvatar))._id
+        this.getUpdate().avatar = (await createOneImage(this.getFilter(), newAvatar))._id
       } else {
         this.getUpdate().avatar = user.avatar
-        await imageService.updateOneImage(user.avatar, newAvatar)
+        await updateOneImage(user.avatar, newAvatar)
       }
     }
     next()
@@ -53,7 +53,7 @@ userSchema.pre('findOneAndUpdate', async function (next) {
 userSchema.post('findOneAndDelete', async function (user) {
   const { avatar } = user
   try {
-    if (avatar) await imageService.deleteOneImage(avatar)
+    if (avatar) await deleteOneImage(avatar)
   } catch (error) {
     throw new CustomError(error?.status ?? 500, error?.message ?? error)
   }

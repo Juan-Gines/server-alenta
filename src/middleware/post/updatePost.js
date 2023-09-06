@@ -1,7 +1,7 @@
 import { CustomError } from '#Errors/CustomError.js'
 import { errorMessageES } from '#Lang/es/errorMessage.js'
-import imageService from '#Services/imageService.js'
-import postService from '#Services/postService.js'
+import { createImages, createOneImage, updateOneImage } from '#Services/imageService.js'
+import { getOnePost } from '#Services/postService.js'
 
 const updateMiddleware = async (req, res, next) => {
   const { user } = req
@@ -13,7 +13,7 @@ const updateMiddleware = async (req, res, next) => {
     if (!isPostFromUser) {
       throw new CustomError(401, errorMessageES.errUnAuthorized)
     }
-    const post = await postService.getOnePost(id, user)
+    const post = await getOnePost(id, user)
 
     // * Comprobamos si se van a updatear más de 10 imágenes
 
@@ -28,9 +28,9 @@ const updateMiddleware = async (req, res, next) => {
         image.post = post._id
         return image
       })
-      const createdImages = await imageService.createImages(user._id, imagesForCreate)
-      const ids = createdImages.map(i => i._id)
-      images.splice(0, createdImages.length, ...ids)
+      const newImages = await createImages(user._id, imagesForCreate)
+      const ids = newImages.map(i => i._id)
+      images.splice(0, newImages.length, ...ids)
       if (post.images.length !== 0) {
         req.body.images = images.concat(post.images)
       }
@@ -39,9 +39,9 @@ const updateMiddleware = async (req, res, next) => {
     if (poster) {
       if (!post.poster) {
         poster.post = post._id
-        req.body.poster = (await imageService.createOneImage(user._id, poster))._id
+        req.body.poster = (await createOneImage(user._id, poster))._id
       } else {
-        req.body.poster = (await imageService.updateOneImage(post.poster, poster))._id
+        req.body.poster = (await updateOneImage(post.poster, poster))._id
       }
     }
     next()

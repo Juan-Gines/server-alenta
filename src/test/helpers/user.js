@@ -1,8 +1,8 @@
 import supertest from 'supertest'
 import expressApp from '#Config/express.js'
 import UserModel from '#Models/user.js'
-import authService from '#Services/authService.js'
-import userService from '#Services/userService.js'
+import { loginUser } from '#Services/authService.js'
+import { getAllUsers } from '#Services/userService.js'
 
 const api = supertest(expressApp)
 
@@ -77,14 +77,14 @@ const insertUser = async (body) => {
 // Obtener token
 
 const getToken = async (num = 1) => {
-  const login = await authService.loginUser(initialUsers[num].email, userToInsert.password)
+  const login = await loginUser(initialUsers[num].email, userToInsert.password)
   return login.token
 }
 
 // Obtener un get all users
 
 const getUsers = async () => {
-  const content = await userService.getAllUsers()
+  const content = await getAllUsers()
   return content
 }
 
@@ -100,6 +100,7 @@ const getUser = async (token) => {
 export {
   api,
   userDBInit,
+  insertUser,
   badUser,
   initialUsers,
   userToInsert,

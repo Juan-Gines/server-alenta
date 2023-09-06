@@ -52,10 +52,9 @@ const getOnePost = (postId, user = undefined) => {
 
 const createOnePost = async (user, post) => {
   const userToUpdate = new UserModel(user)
-  const { newImages, ...infoPost } = post
   try {
     const postToInsert = {
-      ...infoPost,
+      ...post,
       user: userToUpdate._id
     }
     const newPost = new PostModel(postToInsert)
@@ -129,7 +128,7 @@ const deleteOnePost = async (user, postId) => {
 //   return { $pull: { posts: _id } }
 // }
 
-export default {
+export {
   getAllPosts,
   getOnePost,
   createOnePost,

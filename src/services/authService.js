@@ -69,7 +69,7 @@ const updatePasswordUser = async (userId, changes) => {
   }
 }
 
-export default {
+export {
   loginUser,
   updatePasswordUser,
   registerNewUser
