@@ -1,45 +1,41 @@
 import { Type } from '@sinclair/typebox'
 import Ajv from 'ajv'
-import addFormats from 'ajv-formats'
 import addErrors from 'ajv-errors'
-import { emailDTOSchema, nameDTOSchema, passwordDTOSchema } from '#DTO/user/typesUser.js'
+import addFormats from 'ajv-formats'
+import { emailDTOSchema } from '../dto/user/typesUser.js'
 import { CustomError } from '#Errors/CustomError.js'
 import { errorMessageES } from '#Lang/es/errorMessage.js'
 
-// ! error Messages
+// ! Error messages
 
 const { errRequired } = errorMessageES
 
-// * Register Validation data
+// * Validation user change password
 
-const RegisterDTOSchema = Type.Object(
+const ForgotPasswordDTOSchema = Type.Object(
   {
-    name: nameDTOSchema,
-    email: emailDTOSchema,
-    password: passwordDTOSchema
+    email: emailDTOSchema
   },
   {
     errorMessage: {
       required: {
-        name: errRequired('nombre'),
-        email: errRequired('email'),
-        password: errRequired('password')
+        email: errRequired('email')
       }
     }
   }
 )
 
 const ajv = new Ajv({ allErrors: true })
-  .addKeyword('Kind')
+  .addKeyword('kind')
   .addKeyword('modifier')
-ajv.addFormat('password', /^(?=.+\d)(?=.*[a-z])(?=.*[A-Z]).*$/)
-addFormats(ajv, ['email', 'uuid'])
+addFormats(ajv, ['email'])
 addErrors(ajv)
 
-const validateSchema = ajv.compile(RegisterDTOSchema)
+const validateSchema = ajv.compile(ForgotPasswordDTOSchema)
 
-const userRegisterDTO = (req, res, next) => {
+const forgotPasswordDTO = (req, res, next) => {
   const isDTOValid = validateSchema(req.body)
+
   if (!isDTOValid) {
     throw new CustomError(400,
       validateSchema.errors.map((path) => {
@@ -53,9 +49,9 @@ const userRegisterDTO = (req, res, next) => {
         }
       })
     )
-  } else {
-    next()
   }
+
+  next()
 }
 
-export default userRegisterDTO
+export default forgotPasswordDTO

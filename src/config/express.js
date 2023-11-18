@@ -6,6 +6,7 @@ import postRouter from '#Routes/postRoutes.js'
 import imageRouter from '#Routes/imageRoutes.js'
 import notFound from '#Errors/notFound.js'
 import handleErrors from '#Errors/handleErrors.js'
+import corsOptions from './cors.js'
 
 const expressApp = express()
 
@@ -13,7 +14,7 @@ expressApp.disable('x-powered-by')
 
 // Middlewares
 expressApp.use(express.json())
-expressApp.use(cors())
+expressApp.use(cors(corsOptions))
 
 // Routes
 expressApp.use('/api/users', userRouter)

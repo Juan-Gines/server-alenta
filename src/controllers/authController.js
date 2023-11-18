@@ -1,8 +1,8 @@
 import { CustomError } from '#Errors/CustomError.js'
 import { errorMessageES } from '#Lang/es/errorMessage.js'
-import { loginUser, registerNewUser, updatePasswordUser } from '#Services/authService.js'
+import { forgotPassword, loginUser, registerNewUser, resetPassword, updatePasswordUser } from '#Services/authService.js'
 
-// * Login controller
+// * Login controlador
 
 const userLoginController = (req, res, next) => {
   const { email, password } = req.body
@@ -13,7 +13,7 @@ const userLoginController = (req, res, next) => {
     })
 }
 
-// * Register controller
+// * Registro controlador
 
 const registerController = (req, res, next) => {
   const { body } = req
@@ -25,7 +25,7 @@ const registerController = (req, res, next) => {
     })
 }
 
-// * Update password user controller
+// * Updatear contraseña controlador
 
 const updatePasswordController = (req, res, next) => {
   const { body, user } = req
@@ -41,8 +41,34 @@ const updatePasswordController = (req, res, next) => {
     })
 }
 
+// * Contraseña olvidada controlador
+
+const forgotPasswordController = (req, res, next) => {
+  const { email } = req.body
+
+  forgotPassword(email)
+    .then((mailEnviado) => res.json({ status: 'OK', data: mailEnviado }))
+    .catch((error) => {
+      next(error)
+    })
+}
+
+// * Reseteamos la contraseña olvidada
+
+const resetPasswordController = (req, res, next) => {
+  const { body, user } = req
+  const { newPassword } = body
+  resetPassword(user, newPassword)
+    .then((mailEnviado) => res.json({ status: 'OK', data: mailEnviado }))
+    .catch((error) => {
+      next(error)
+    })
+}
+
 export {
   registerController,
   userLoginController,
-  updatePasswordController
+  updatePasswordController,
+  forgotPasswordController,
+  resetPasswordController
 }
