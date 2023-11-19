@@ -7,6 +7,6 @@ export const transporter = nodemailer.createTransport({
     pass: process.env.EMAIL_PASSWORD
   },
   tls: {
-    rejectUnauthorized: false // Desactiva la validación del certificado, no dejar en producción
+    rejectUnauthorized: true // Desactiva la validación del certificado, no dejar en producción
   }
 })
