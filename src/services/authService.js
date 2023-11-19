@@ -83,13 +83,12 @@ const forgotPassword = async (email) => {
       id: user._id
     }
     const token = jwt.sign(userForToken, process.env.JWT_PRIVATE_KEY, { expiresIn: '1h' })
-    console.log(token)
     const tokenReplaceUrl = encodeURI(token.replaceAll('.', ' '))
     const resetPasswordLink = `http://localhost:5173/reset-password/${tokenReplaceUrl}`
     const emailSend = emailOptions(email, subjects.resetPassword, `Pinche en este enlace para recuperar su contraseña: ${resetPasswordLink}`)
     transporter.sendMail(emailSend, (error, info) => {
       if (error) {
-        console.error(error)
+        throw new Error('Error enviando el correo')
       } else {
         console.log('Correo electrónico enviado: ' + info.response)
       }
