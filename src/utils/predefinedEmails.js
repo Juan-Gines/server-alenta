@@ -9,5 +9,6 @@ export const emailOptions = (to, subject, text) => {
 }
 
 export const subjects = Object.freeze({
-  resetPassword: 'Alenta Dev - Recuperación del contraseña'
+  resetPassword: 'Alenta Dev - Recuperación del contraseña',
+  activacionCuenta: 'Alenta Dev - Activación de cuenta'
 })

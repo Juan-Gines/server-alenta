@@ -14,6 +14,7 @@ const userSchema = new Schema({
   email: { type: String, trim: true, lowercase: true, require: true, unique: true },
   role: { type: String, trim: true, enum: ['user', 'family', 'admin', 'friend'], default: 'user', require: true },
   password: { type: String, trim: true, require: true },
+  active: { type: Boolean, default: false },
   posts: [{ type: Schema.Types.ObjectId, trim: true, ref: 'Post' }]
 }, {
   timestamps: true

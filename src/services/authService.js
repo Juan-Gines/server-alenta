@@ -48,6 +48,14 @@ const registerNewUser = async (newUser) => {
 
     const createdUser = new UserModel(newUser)
     await createdUser.save()
+    const userForToken = {
+      id: createdUser._id
+    }
+    const token = jwt.sign(userForToken, process.env.JWT_PRIVATE_KEY, { expiresIn: '1d' })
+    const tokenReplaceUrl = encodeURI(token.replaceAll('.', ' '))
+    const resetPasswordLink = `${process.env.CLIENT_URL}activar-cuenta/${tokenReplaceUrl}`
+    const emailSend = emailOptions(email, subjects.resetPassword, `Pinche en este enlace para activar su cuenta: ${resetPasswordLink}`)
+    await transporter.sendMail(emailSend)
     return createdUser
   } catch (error) {
     throw new CustomError(error?.status ?? 500, error?.message ?? error)
@@ -71,6 +79,18 @@ const updatePasswordUser = async (user, changes) => {
   }
 }
 
+// * Activar usuario
+
+const activeUser = async () => {
+  try {
+    const hashedPass = await hash(password, SALT)
+    const updatedUser = await UserModel.findByIdAndUpdate(user._id, { password: hashedPass }, { new: true })
+    return { message: `El password de ${updatedUser.name} se reseteó correctamente.` }
+  } catch (error) {
+    throw new CustomError(error?.status ?? 500, error?.message ?? error)
+  }
+}
+
 // * Enviamos email de recuperación de password
 
 const forgotPassword = async (email) => {
@@ -86,13 +106,7 @@ const forgotPassword = async (email) => {
     const tokenReplaceUrl = encodeURI(token.replaceAll('.', ' '))
     const resetPasswordLink = `${process.env.CLIENT_URL}reset-password/${tokenReplaceUrl}`
     const emailSend = emailOptions(email, subjects.resetPassword, `Pinche en este enlace para recuperar su contraseña: ${resetPasswordLink}`)
-    transporter.sendMail(emailSend, (error, info) => {
-      if (error) {
-        throw new Error('Error enviando el correo')
-      } else {
-        console.log('Correo electrónico enviado: ' + info.response)
-      }
-    })
+    await transporter.sendMail(emailSend)
     return { message: 'correo electrónico enviado' }
   } catch (error) {
     throw new CustomError(error?.status ?? 500, error?.message ?? error)
@@ -116,5 +130,6 @@ export {
   updatePasswordUser,
   registerNewUser,
   forgotPassword,
-  resetPassword
+  resetPassword,
+  activeUser
 }
