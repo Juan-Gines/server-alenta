@@ -81,11 +81,11 @@ const updatePasswordUser = async (user, changes) => {
 
 // * Activar usuario
 
-const activeUser = async () => {
+const activeUser = async (user) => {
   try {
-    const hashedPass = await hash(password, SALT)
-    const updatedUser = await UserModel.findByIdAndUpdate(user._id, { password: hashedPass }, { new: true })
-    return { message: `El password de ${updatedUser.name} se reseteó correctamente.` }
+    if (user.active) return { message: `La cuenta de ${user.name} ya esta activada. Ya puede loguearse.` }
+    const updatedUser = await UserModel.findByIdAndUpdate(user._id, { active: true }, { new: true })
+    return { message: `El usuario ${updatedUser.name} activó la cuenta dorrectamente.  Ya puede loguearse.` }
   } catch (error) {
     throw new CustomError(error?.status ?? 500, error?.message ?? error)
   }

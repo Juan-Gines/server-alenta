@@ -65,10 +65,22 @@ const resetPasswordController = (req, res, next) => {
     })
 }
 
+// * Activamos la cuenta del usuario
+
+const activeAcountController = (req, res, next) => {
+  const { user } = req
+  resetPassword(user)
+    .then((data) => res.json({ status: 'OK', data }))
+    .catch((error) => {
+      next(error)
+    })
+}
+
 export {
   registerController,
   userLoginController,
   updatePasswordController,
   forgotPasswordController,
-  resetPasswordController
+  resetPasswordController,
+  activeAcountController
 }

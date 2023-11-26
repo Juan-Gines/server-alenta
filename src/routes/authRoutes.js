@@ -3,7 +3,7 @@ import userLoginDTO from '#Auth/login.js'
 import userRegisterDTO from '#Auth/register.js'
 import userUpdatePasswordDTO from '#Auth/updatePassword.js'
 import userExtractor from '#Auth/userExtractor.js'
-import { forgotPasswordController, registerController, resetPasswordController, updatePasswordController, userLoginController } from '#Controllers/authController.js'
+import { activeAcountController, forgotPasswordController, registerController, resetPasswordController, updatePasswordController, userLoginController } from '#Controllers/authController.js'
 import trimBody from '#DTO/trimBody.js'
 import forgotPasswordDTO from '#Auth/forgotPassword.js'
 import resetPasswordDTO from '#Auth/resetPassword.js'
@@ -21,6 +21,8 @@ router
   .post('/forgot-password', trimBody, forgotPasswordDTO, forgotPasswordController)
 
   .post('/reset-password', trimBody, userExtractor, resetPasswordDTO, resetPasswordController)
+
+  .get('/active-acount', userExtractor, activeAcountController)
 
   .patch('/password', trimBody, userExtractor, userUpdatePasswordDTO, updatePasswordController)
 
