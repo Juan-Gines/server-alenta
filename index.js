@@ -32,6 +32,12 @@ app.get('/', (req, res) => {
   }
   res.send(htmlResponse)
 })
+app.get('/api', (req, res) => {
+  const htmlResponse = {
+    message: 'Hello World!'
+  }
+  res.send(htmlResponse)
+})
 
 app.listen(port, () => {
   console.log(`port runing in http://localhost:${port}`)
