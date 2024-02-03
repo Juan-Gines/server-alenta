@@ -1,5 +1,5 @@
 import mongoose from 'mongoose'
-import server from '../index.js'
+import server from '../../index.js'
 import { api } from './helpers/user.js'
 
 beforeEach(async () => {

@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "type": "module",
   "description": "Api rest web Alentà",
-  "main": "src/index.js",
+  "main": "./index.js",
   "scripts": {
-    "dev": "cross-env NODE_ENV=developemnt node --watch src/index.js",
-    "start": "node src/index.js",
+    "dev": "cross-env NODE_ENV=developemnt node --watch ./index.js",
+    "start": "node ./index.js",
     "lint": "eslint .",
     "test": "cross-env NODE_OPTIONS=--experimental-vm-modules NODE_ENV=test jest --runInBand",
     "test:verbose": "npm run test -- --verbose",
