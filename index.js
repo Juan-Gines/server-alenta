@@ -18,7 +18,7 @@
 
 // export default server
 
-const express = require('express')
+import express from 'express'
 const app = express()
 
 const port = process.env.PORT || 3000
