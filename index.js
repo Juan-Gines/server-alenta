@@ -1,5 +1,8 @@
 import connectDB from '#Config/db.js'
 import '#Config/env.js'
+import postRouter from '#Routes/postRoutes.js'
+import notFound from '#Errors/notFound.js'
+import handleErrors from '#Errors/handleErrors.js'
 
 // const server = expressApp.listen(process.env.PORT, () => {
 //   console.log(`Servidor escuchando en el puerto http://localhost:${process.env.PORT}`)
@@ -39,6 +42,10 @@ app.get('/api', (req, res) => {
   res.send(htmlResponse)
 })
 
+app.use('/api/posts', postRouter)
+// Errors
+app.use(notFound)
+app.use(handleErrors)
 app.listen(port, () => {
   console.log(`port runing in http://localhost:${port}`)
 })
