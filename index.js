@@ -11,7 +11,7 @@ import express from 'express'
 import cors from 'cors'
 // import expressApp from '#Config/express.js'
 
-// const { MONGODB_URL, MONGODB_URL_TEST, NODE_ENV } = process.env
+const { MONGODB_URL, MONGODB_URL_TEST, NODE_ENV } = process.env
 
 // // ? Utilizamos otra base de datos para el test
 
