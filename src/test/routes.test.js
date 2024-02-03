@@ -1,6 +1,6 @@
 import mongoose from 'mongoose'
 import { api } from './helpers/user.js'
-import server from '../../api/index.js'
+import server from '../../index.js'
 
 afterAll(async () => {
   await mongoose.connection.close()

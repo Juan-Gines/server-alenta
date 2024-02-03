@@ -1,4 +1,4 @@
-import server from '../../api/index.js'
+import server from '../../index.js'
 import mongoose from 'mongoose'
 import { errorMessageES } from '#Lang/es/errorMessage.js'
 import { api, badUser, errTokenExpired, errTokenNoUser, getUsers, getToken, initialUsers, passwordChange, userDBInit, userToInsert } from './helpers/user.js'
