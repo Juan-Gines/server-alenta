@@ -14,7 +14,7 @@ El backend de la página web AlentaDev
   - CRUD completo
   - Imagenes.
 
-## Tecnologías 
+## Tecnologías
 
 - NodeJS.
 - MongoDB(Mongoose).
