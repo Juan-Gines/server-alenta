@@ -1,6 +1,6 @@
 import mongoose from 'mongoose'
 import { api, badUser, getUser } from './helpers/user.js'
-import server from '../../index.js'
+import server from '../../api/index.js'
 import { badPost, deleteFakePost, fakePostId, getPosts, newPost, postDBInit } from './helpers/posts.js'
 import { errorMessageES } from '#Lang/es/errorMessage.js'
 import PostModel from '#Models/post.js'
