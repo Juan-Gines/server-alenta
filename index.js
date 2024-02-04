@@ -1,51 +1,19 @@
 import connectDB from '#Config/db.js'
 import '#Config/env.js'
-import postRouter from '#Routes/postRoutes.js'
-import notFound from '#Errors/notFound.js'
-import handleErrors from '#Errors/handleErrors.js'
-
-// const server = expressApp.listen(process.env.PORT, () => {
-//   console.log(`Servidor escuchando en el puerto http://localhost:${process.env.PORT}`)
-// })
-
-// export default server
-
-import express from 'express'
-import cors from 'cors'
-// import expressApp from '#Config/express.js'
+import expressApp from '#Config/express.js'
 
 const { MONGODB_URL, MONGODB_URL_TEST, NODE_ENV } = process.env
 
-// // ? Utilizamos otra base de datos para el test
+// ? Utilizamos otra base de datos para el test
 
 const connectionString = NODE_ENV === 'test'
   ? MONGODB_URL_TEST
   : MONGODB_URL
 
 await connectDB(connectionString)
-const app = express()
-app.use(express.json())
-app.use(cors())
 
-const port = process.env.PORT || 3000
-
-app.get('/', (req, res) => {
-  const htmlResponse = {
-    message: 'Hello World!'
-  }
-  res.send(htmlResponse)
-})
-app.get('/api', (req, res) => {
-  const htmlResponse = {
-    message: 'Hello World!'
-  }
-  res.send(htmlResponse)
+const server = expressApp.listen(process.env.PORT, () => {
+  console.log(`Servidor escuchando en el puerto http://localhost:${process.env.PORT}`)
 })
 
-app.use('/api/posts', postRouter)
-// Errors
-app.use(notFound)
-app.use(handleErrors)
-app.listen(port, () => {
-  console.log(`port runing in http://localhost:${port}`)
-})
+export default server
