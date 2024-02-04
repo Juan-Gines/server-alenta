@@ -5,6 +5,6 @@ import { errorLog } from '../../utils/errorlog.js'
 export default async (error, req, res, next) => {
   await errorLog(error, req)
   res
-    .status(error?.status || 500)
+    // .status(error?.status || 500)
     .json({ status: 'FAILED', data: { error: error?.message || error } })
 }
