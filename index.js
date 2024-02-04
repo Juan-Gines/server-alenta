@@ -2,18 +2,22 @@ import connectDB from '#Config/db.js'
 import '#Config/env.js'
 import expressApp from '#Config/express.js'
 
-const { MONGODB_URL, MONGODB_URL_TEST, NODE_ENV } = process.env
+const { MONGODB_URL, MONGODB_URL_TEST, NODE_ENV, PORT } = process.env
 
-// ? Utilizamos otra base de datos para el test
+// Determina la URL de conexión según el entorno
+const connectionString = NODE_ENV === 'test' ? MONGODB_URL_TEST : MONGODB_URL
 
-const connectionString = NODE_ENV === 'test'
-  ? MONGODB_URL_TEST
-  : MONGODB_URL
-
-await connectDB(connectionString)
-
-const server = expressApp.listen(process.env.PORT, () => {
-  console.log(`Servidor escuchando en el puerto http://localhost:${process.env.PORT}`)
-})
+let server
+// Conecta a la base de datos
+connectDB(connectionString)
+  .then(() => {
+    // Inicia el servidor
+    server = expressApp.listen(PORT, () => {
+      console.log(`Servidor escuchando en el puerto http://localhost:${PORT}`)
+    })
+  })
+  .catch((error) => {
+    console.error('Error al conectar a la base de datos:', error)
+  })
 
 export default server
